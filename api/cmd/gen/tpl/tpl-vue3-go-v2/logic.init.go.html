@@ -3,8 +3,8 @@ package logic
 
 import (
 	"os"
-	"github.com/techidea8/codectl/app/{{.Project.Name|lower}}/conf"
-	"github.com/techidea8/codectl/app/{{.Project.Name|lower}}/model"
+	"{{.Project.Package}}/app/{{.Project.Name|lower}}/conf"
+	"{{.Project.Package}}/app/{{.Project.Name|lower}}/model"
 	"github.com/techidea8/codectl/infra/dbkit"
 	"github.com/techidea8/codectl/infra/logger"
 )

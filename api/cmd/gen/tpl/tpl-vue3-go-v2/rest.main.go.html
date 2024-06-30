@@ -4,8 +4,8 @@ package main
 import (
 	"flag"
 
-	"github.com/techidea8/codectl/app/{{.Project.Name|lower}}/conf"
-	"github.com/techidea8/codectl/app/{{.Project.Name|lower}}/logic"
+	"{{.Project.Package}}/app/{{.Project.Name|lower}}/conf"
+	"{{.Project.Package}}/app/{{.Project.Name|lower}}/logic"
 	"github.com/techidea8/codectl/infra/restkit"
 	"github.com/techidea8/codectl/infra/restkit/middleware"
 )

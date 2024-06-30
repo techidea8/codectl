@@ -2,8 +2,8 @@
 {{define "./server/api/rest/[prjname]/handler/[module].go.tpl"}}
 package handler
 import (
-	"github.com/techidea8/codectl/app/{{.Project.Name|lower}}/logic"
-	"github.com/techidea8/codectl/app/{{.Project.Name|lower}}/model"
+	"{{.Project.Package}}/app/{{.Project.Name|lower}}/logic"
+	"{{.Project.Package}}/app/{{.Project.Name|lower}}/model"
 	"github.com/techidea8/codectl/infra/cond"
 	"github.com/techidea8/codectl/infra/restkit"
 	"github.com/techidea8/codectl/infra/wraper"
