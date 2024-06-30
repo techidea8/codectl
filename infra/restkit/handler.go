@@ -91,17 +91,21 @@ func (h pathHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			err = reply[1].Interface().(error)
 		}
 		if err != nil {
-			wraper.Error(err).Encode(w)
+			return wraper.Error(err), err
 		} else {
-			resultwraper.(*wraper.Response).Encode(w)
+			return resultwraper.(*wraper.Response), nil
 		}
-		return
 	}
 
 	for i := len(h.beforemiddle) - 1; i >= 0; i-- {
 		handle = h.beforemiddle[i](handle)
 	}
-	handle(ctx)
+	result, err := handle(ctx)
+	if err != nil {
+		wraper.Error(err).Encode(w)
+	} else {
+		result.Encode(w)
+	}
 	for i := len(h.aftermiddle) - 1; i >= 0; i-- {
 		handle = h.aftermiddle[i](handle)
 	}

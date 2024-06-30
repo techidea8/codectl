@@ -27,11 +27,11 @@ func Error(msg interface{}) *Response {
 			Status: http.StatusOK,
 		}
 	}
-	switch msg.(type) {
+	switch msg := msg.(type) {
 	case string:
-		str = msg.(string)
+		str = msg
 	case error:
-		str = msg.(error).Error()
+		str = msg.Error()
 	default:
 		str = ""
 	}

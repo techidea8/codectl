@@ -12,20 +12,18 @@ type LogrusImpl struct {
 	logger *logrus.Logger
 }
 
-func NewLogrus(filepath string, level logrus.Level) LogrusImpl {
+func NewLogrus(filepath string, level LogLevel) LogrusImpl {
 
 	// 创建一个新的 logger
 	loggerus := logrus.New()
 	w1 := os.Stdout
 	// 设置日志级别
-	loggerus.SetLevel(level)
+	loggerus.SetLevel(logrus.Level(level))
 	// 创建一个文件句柄，用于写入日志
 	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
-
 	// 设置日志输出到文件
 	loggerus.SetOutput(io.MultiWriter(w1, file))
 	// 配置日志格式

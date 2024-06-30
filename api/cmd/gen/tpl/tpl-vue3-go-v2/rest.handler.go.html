@@ -9,6 +9,9 @@ import (
 	"github.com/techidea8/codectl/infra/wraper"
 	"github.com/techidea8/codectl/infra/xlskit"
 	genlogic "github.com/techidea8/codectl/app/gen/logic"
+	"reflect"
+	"github.com/techidea8/codectl/infra/utils/stringx"
+
 )
 // 声明结构体
 type {{.Module|ucfirst}} struct{}
@@ -73,7 +76,7 @@ func (ctrl *{{.Module|ucfirst}}) Export(ctx restkit.Context) (r *wraper.Response
 		return wraper.Error(err), err
 	}
 	//
-	modulename := "{{.Module|lcfirst}}"
+	modulename := stringx.Lcfirst(reflect.TypeOf(ctrl).Elem().Name())
 	metas, err := genlogic.MetaFromModuleName(modulename)
 	if err != nil {
 		return wraper.Error(err), err

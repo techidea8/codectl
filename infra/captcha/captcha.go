@@ -2,7 +2,6 @@ package captcha
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -31,12 +30,13 @@ func GenerateCaptcha() (result map[int]captcha.CharDot, b64 string, tb64 string,
 // 这是router
 func CheckCaptcha(dots, key string) (r bool, err error) {
 	if dots == "" || key == "" {
-		err = errors.New("dots or key param is empty")
+		err = fmt.Errorf("验证码或验证码参数缺失")
 		return
 	}
 
 	ret, err := cachekit.Get(key)
 	if err != nil {
+		//fmt.Println(err.Error())
 		return false, err
 	}
 	cacheData := ret.(string)
@@ -46,7 +46,7 @@ func CheckCaptcha(dots, key string) (r bool, err error) {
 	var dct map[int]captcha.CharDot
 	err = json.Unmarshal([]byte(cacheData), &dct)
 	if err != nil {
-		err = errors.New("illegal key")
+		err = fmt.Errorf("键值无效")
 		return
 	}
 

@@ -1,6 +1,6 @@
 package logger
 
-var DefaultLogger ILogger = NewStd(InfoLevel)
+var DefaultLogger ILogger = NewLogrus("app.log", InfoLevel)
 
 func Use(logger ILogger) {
 	DefaultLogger = logger

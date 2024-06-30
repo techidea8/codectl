@@ -1,9 +1,9 @@
 package cachekit
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/getlantern/errors"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -26,7 +26,7 @@ func (s *gocache) Set(k string, v interface{}, d time.Duration) error {
 func (s *gocache) Get(k string) (interface{}, error) {
 	r, f := s.cacher.Get(k)
 	if !f {
-		return nil, errors.New("获取失败")
+		return nil, fmt.Errorf("获取失败")
 	} else {
 		return r, nil
 	}

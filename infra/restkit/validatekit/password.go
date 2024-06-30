@@ -15,30 +15,30 @@ func PasswordScore(f validator.FieldLevel) bool {
 
 	bts := []byte(value)
 	// 包含英文
-	reglower := regexp.MustCompile("/[a-z]+/")
+	reglower := regexp.MustCompile(`[a-z]+`)
 	if reglower.Match(bts) {
 		score += 1
 	}
 	// 大小写
-	reglower = regexp.MustCompile("/[A-Z]+/")
+	reglower = regexp.MustCompile(`[A-Z]+`)
 	if reglower.Match(bts) {
 		score += 1
 	}
 	// 数字
-	reglower = regexp.MustCompile(`/\d+/`)
+	reglower = regexp.MustCompile(`\d+`)
 	if reglower.Match(bts) {
 		score += 1
 	}
 	//特殊字符
-	reglower = regexp.MustCompile(`/[,!\?\:\'\"\(\)\$\%\^\*\@]+/`)
+	reglower = regexp.MustCompile(`[,!\?\:\'\"\(\)\$\%\^\*\@]+`)
 	if reglower.Match(bts) {
 		score += 1
 	}
 	// 大于5位,否则零分
 	if len(value) > 5 {
-		score += 1
+		score *= 1
 	} else {
-		score = 0
+		score *= 0
 	}
 	if dstscore > score {
 		return false

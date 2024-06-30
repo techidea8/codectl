@@ -2,6 +2,7 @@ package token
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -31,6 +32,9 @@ func GenerateTokenWithSecret(values map[string]interface{}, secretKey string) (s
 
 // VerfyToken 验证token
 func ParseTokenWithSecret(token, secretKey string) (map[string]interface{}, error) {
+	if token == "" {
+		return nil, fmt.Errorf("token内容为空")
+	}
 	tokenObj, err := jwt.Parse(token, func(*jwt.Token) (interface{}, error) {
 		return []byte(secretKey), nil
 	})
