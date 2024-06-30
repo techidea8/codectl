@@ -1,0 +1,31 @@
+{{define "./console/src/api/types.ts.tpl"}}
+// 分页
+export type Pager={
+  pagefrom :number      
+	pagesize : number      
+}
+// 排序
+export type Order={
+  field: string
+  method: "desc"|"asc"
+}
+// 条件
+export type Item={
+  field: string
+  op: string
+  value: string
+}
+// 条件
+export type ICond={
+  conds?: Item[]
+  order?: Order
+  pager?: Pager 
+}
+// 返回响应
+export interface IResponse<T>{
+    code:number
+    data?:T
+    rows?:T[]
+    msg?:string
+}
+{{end}}

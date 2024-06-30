@@ -1,0 +1,124 @@
+
+{{define "./server/api/rest/[prjname]/handler/[module].go.tpl"}}
+package handler
+import (
+	"github.com/techidea8/codectl/app/{{.Project.Name|lower}}/logic"
+	"github.com/techidea8/codectl/app/{{.Project.Name|lower}}/model"
+	"github.com/techidea8/codectl/infra/cond"
+	"github.com/techidea8/codectl/infra/restkit"
+	"github.com/techidea8/codectl/infra/wraper"
+	"github.com/techidea8/codectl/infra/xlskit"
+	genlogic "github.com/techidea8/codectl/app/gen/logic"
+)
+// 声明结构体
+type {{.Module|ucfirst}} struct{}
+// 注册业务逻辑
+func init() {
+	restkit.Register(&{{.Module|ucfirst}}{})
+}
+
+// 创建{{.Title}}
+func (ctrl *{{.Module|ucfirst}}) Create(ctx restkit.Context) (r *wraper.Response, err error) {
+	instance := &model.{{.Module|ucfirst}}{}
+	err = ctx.Bind(instance)
+	if err != nil {
+		return wraper.Error(err), err
+	}
+	instance, err = logic.Create(instance)
+	return wraper.OkData(instance).WithMsg("{{.Title}}创建成功"), err
+}
+// 修改{{.Title}}
+func (ctrl *{{.Module|ucfirst}}) Update(ctx restkit.Context) (r *wraper.Response, err error) {
+	instance := &model.{{.Module|ucfirst}}{}
+	err = ctx.Bind(instance)
+	if err != nil {
+		return wraper.Error(err), err
+	}
+	instance, err = logic.Update(instance, "{{.Primary.RawData.ColumnName}} = ?", instance.{{.Primary.DataColumn|ucfirst}})
+	return wraper.OkData(instance).WithMsg("{{.Title}}修改成功"), err
+}
+
+// 根据条件查询{{.Title}}
+func (ctrl *{{.Module|ucfirst}}) Search(ctx restkit.Context) (r *wraper.Response, err error) {
+	condwraper := cond.NewCondWrapper()
+	if err = ctx.Bind(condwraper); err != nil {
+		return
+	}
+	instance := &model.{{.Module|ucfirst}}{}
+	rows, total, err := logic.Search(instance, condwraper)
+	return wraper.OkData(rows).WithTotal(total), err
+}
+
+// 根据主键删除{{.Title}}
+func (ctrl *{{.Module|ucfirst}}) Delete(ctx restkit.Context) (r *wraper.Response, err error) {
+	instance := &model.{{.Module|ucfirst}}{}
+	err = ctx.Bind(instance)
+	if err != nil {
+		return wraper.Error(err), err
+	}
+	total, err := logic.Delete(instance, "{{.Primary.RawData.ColumnName}} = ?", instance.{{.Primary.DataColumn|ucfirst}})
+	return wraper.OkData(total).WithMsg("{{.Title}}删除成功"), err
+}
+
+// 导出{{.Title}}
+func (ctrl *{{.Module|ucfirst}}) Export(ctx restkit.Context) (r *wraper.Response, err error) {
+	condwraper := cond.NewCondWrapper()
+	err = ctx.Bind(condwraper)
+	if err != nil {
+		return wraper.Error(err), err
+	}
+	instance := &model.{{.Module|ucfirst}}{}
+	rows, _, err := logic.Search(instance, condwraper)
+	if err != nil {
+		return wraper.Error(err), err
+	}
+	//
+	modulename := "{{.Module|lcfirst}}"
+	metas, err := genlogic.MetaFromModuleName(modulename)
+	if err != nil {
+		return wraper.Error(err), err
+	}
+
+	metaArr := make([]xlskit.Meta, 0)
+	for _, v := range metas {
+		metaArr = append(metaArr, xlskit.Meta{
+			Field: v.DataColumn,
+			Title: v.Title,
+		})
+	}
+	dataMap := make([]map[string]any, 0)
+	for _, v := range rows {
+		dataMap = append(dataMap, v.TOMAP())
+	}
+	// 创建一个工作表
+	xlsxctrl := xlskit.NewXlsCtrl(modulename)
+	buf, err := xlsxctrl.Render(metaArr, dataMap)
+	if err != nil {
+		return wraper.Error(err), err
+	}
+	return wraper.Blob(wraper.BlobDef{
+		File:        buf.Bytes(),
+		Name:        "{{.Title}}.xls",
+		ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+	}), err
+}
+
+// {{.Title}}的meta
+func (ctrl *{{.Module|ucfirst}}) Meta(ctx restkit.Context) (r *wraper.Response, err error) {
+	moduleName := "{{.Module|lcfirst}}"
+	metas, err := genlogic.MetaFromModuleName(moduleName)
+	return wraper.OkData(metas), err
+}
+
+// 根据主键获取1条{{.Title}}
+func (ctrl *{{.Module|ucfirst}}) GetOne(ctx restkit.Context) (r *wraper.Response, err error) {
+	instance := &model.{{.Module|ucfirst}}{}
+	err = ctx.Bind(instance)
+	if err != nil {
+		return wraper.Error(err), err
+	}
+	instance, err = logic.TakeByPrimaryKey(instance)
+	return wraper.OkData(instance), err
+}
+
+{{end}}

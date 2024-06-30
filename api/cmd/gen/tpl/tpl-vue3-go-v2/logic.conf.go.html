@@ -1,0 +1,23 @@
+{{define "./server/app/[prjname]/conf/conf.go.tpl"}}
+package conf
+
+type ENVDEF string
+
+const PROD ENVDEF = "prod"
+const DEV ENVDEF = "dev"
+
+type AppConf struct {
+	DbType  string
+	Dsn     string
+	Env     ENVDEF
+	LogFile string
+	LogLevel int32
+}
+var DefaultAppConf *AppConf = &AppConf{
+	DbType: "sqlite",
+	Dsn:     "{{.Project.Name|lower}}.db",
+	Env:     PROD,
+	LogFile: "{{.Project.Name|lower}}.log",
+	LogLevel: 3,
+}
+{{end}}

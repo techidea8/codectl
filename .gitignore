@@ -1,0 +1,6 @@
+*.exe
+*.log
+*.db
+server
+sql
+console

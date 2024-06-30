@@ -1,0 +1,22 @@
+#mysql 到golang 之间的映射
+mysql-golang:
+  TINYINT: int8
+  SMALLINT: int16
+  MEDIUMINT: int32
+  INT: int32
+  INTEGER: int32
+  BIGINT: int64
+  FLOAT: float32
+  DOUBLE: float64
+  DECIMAL: float32
+  DATE: time.Time
+  TIME: time.Time
+  YEAR: time.Time
+  DATETIME: time.Time
+  TIMESTAMP: time.Time
+  CHAR: string
+  VARCHAR: string
+  TINYTEXT: string
+  TEXT: string
+  MEDIUMTEXT: string
+  LONGTEXT: string

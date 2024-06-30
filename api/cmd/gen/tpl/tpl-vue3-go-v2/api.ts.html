@@ -1,0 +1,84 @@
+{{define "./console/src/api/[model].ts.tpl"}}
+import { request } from "@/utils/service"
+import {ICond} from "./types"
+const prefix = "/{{.Module|lcfirst}}"
+
+export type {{.Module|ucfirst|js}} = {
+    {{- range $i,$v := .Columns}}
+      {{$v.DataColumn|camel }} : {{if eq $v.DataType "string" }}string{{else if contains  $v.DataType "int" }}number{{else}} any {{end}}   // {{.Title}}
+    {{end -}}
+}
+// 
+export type I{{.Module|ucfirst}} = Partial<{{.Module|ucfirst|js}}>
+//查询,搜索{{.Title}}对象
+export function search(data:ICond) {
+  return request({
+    url: prefix +'/search',
+    method: 'post',
+    data:data
+  })
+}
+
+//创建{{.Title}}对象
+export function create(data:I{{.Module|ucfirst}}) {
+  return request({
+    url: prefix+'/create',
+    method: 'post',
+    data
+  })
+}
+//更新{{.Title}}
+export function update(data:I{{.Module|ucfirst}}) {
+  return request({
+    url: prefix+'/update',
+    method: 'post',
+    data
+  })
+}
+//获取一条{{.Title}}记录
+export function getOne({{.Primary.DataColumn|lcfirst}} : string|number) {
+  return request({
+    url: prefix+`/getOne`,
+    method: 'get',
+    params:{ {{.Primary.DataColumn|lcfirst}} }
+  })
+}
+
+//删除某一条{{.Title}}
+export function deleteIt({{.Primary.DataColumn|lcfirst}} : string|number) {
+
+  return request({
+    url: prefix+'/delete',
+    method: 'post',
+    data:{
+      {{.Primary.DataColumn|lcfirst}}
+    }
+  })
+}
+
+//导出某一条{{.Title}}
+export function exportxls({{.Primary.DataColumn|lcfirst}}:any) {
+
+  return request({
+    url: prefix+'/export',
+    method: 'post',
+    responseType: 'blob',
+    data:{
+      {{.Primary.DataColumn|lcfirst}}
+    }
+  })
+}
+//导出{{.Title}}的meta信息
+export function meta({{.Primary.DataColumn|lcfirst}}:any) {
+  return request({
+    url: prefix+'/meta',
+    method: 'post',
+    data:{
+      {{.Primary.DataColumn|lcfirst}}
+    }
+  })
+}
+//默认导出全部API
+export default {search,create,update,deleteIt,getOne,exportxls,meta}
+
+{{end}}

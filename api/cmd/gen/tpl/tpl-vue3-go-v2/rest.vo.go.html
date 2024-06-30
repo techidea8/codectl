@@ -1,0 +1,19 @@
+
+{{define "./server/api/rest/[prjname]/vo/[module].go.tpl"}}
+package vo
+import 
+(
+	{{if or (has .Types "types.Date") (has .Types "types.Date")}}
+	"github.com/techidea8/codectl/infra/types"
+	{{end}}
+	{{if has .Types "time.Time"}}
+	"time"
+	{{end}}
+)
+//{{.Title}}参数请求接口
+type {{.Module|ucfirst}} struct{
+	{{range $i,$v := .Columns}}
+        {{ $v.DataColumn | upercamel }} {{ $v.DataType }} `json:"{{ $v.DataColumn | camel }}" {{if eq $v.DataType "types.Date"}}time_format:"2006-01-02";time_utc:"1";{{end}}{{if or (eq $v.DataType "types.DateTime") (eq $v.DataType "time.Time")}}time_format:"2006-01-02 15:04:05";time_utc:"1";{{end}} form:"{{ $v.DataColumn | camel }}"  validate:"{{if eq $v.SuportCreate true}}required{{else}}omitempty{{end}}"`
+    {{end}}
+}
+{{end}}

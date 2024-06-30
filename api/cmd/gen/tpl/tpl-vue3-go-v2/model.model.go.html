@@ -1,0 +1,40 @@
+{{define "./server/app/[prjname]/model/[module].go.tpl"}}
+package model
+import 
+(
+	{{if or (has .Types "types.Date") (has .Types "types.Date")}}
+	"github.com/techidea8/codectl/infra/types"
+	{{end}}
+	{{if has .Types "time.Time"}}
+	"time"
+	{{end}}
+)
+const TableName{{.Module|ucfirst}} = "{{.Name}}"
+
+var {{.Module}}Keys []string= []string{ {{- range $i,$v := .Columns}}"{{ $v.DataColumn | camel }}",{{end}} }
+//{{.Title}}数据库模型
+type {{.Module|ucfirst}} struct{
+	{{- range $i,$v := .Columns}}
+        {{ $v.DataColumn | upercamel }} {{ $v.DataType }} `json:"{{ $v.DataColumn | camel }}" form:"{{ $v.DataColumn | camel }}"  validate:"{{if eq $v.SuportCreate true}}required{{else}}omitempty{{end}}" gorm:"type:{{$v.RawData.DataType}};{{if gt $v.DataSize 0}}size:{{$v.DataSize}};{{end}}{{if eq $v.IsPrimaryKey true}}primaryKey;{{end}}{{if eq $v.IsIndex true}}index;{{end}}{{if eq $v.AutoIncrement true}}autoIncrement;{{end}}{{if eq $v.DataType "types.Date"}}time_format:2006-01-02;time_utc:1;{{end}}{{if or (eq $v.DataType "types.DateTime") (eq $v.DataType "time.Time")}}time_format:2006-01-02 15:04:05;time_utc:1;{{end}}{{if not $v.Title }}{{else}}comment:{{$v.Title}};{{end}}"`
+    {{end}}
+}
+
+// TableName {{.Module|ucfirst}}'s table name
+func (*{{.Module|ucfirst}}) TableName() string {
+	return TableName{{.Module|ucfirst}}
+}
+
+// TableName {{.Module|ucfirst}}'s keys
+func (m {{.Module|ucfirst}}) Keys() []string {
+	return {{.Module}}Keys
+}
+// TableName {{.Module|ucfirst}}'s keys
+func (m {{.Module|ucfirst}}) TOMAP() map[string]any {
+	result := make(map[string]any,0)
+	{{- range $i,$v := .Columns}}
+	result["{{ $v.DataColumn | camel }}"] = m.{{ $v.DataColumn | upercamel }}
+    {{end}}
+	return result
+}
+
+{{end}}

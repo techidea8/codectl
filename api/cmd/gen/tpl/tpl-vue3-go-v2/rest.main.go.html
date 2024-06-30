@@ -1,0 +1,23 @@
+{{define "./server/api/rest/[prjname]/main.go.tpl"}}
+package main
+
+import (
+	"flag"
+
+	"github.com/techidea8/codectl/app/{{.Project.Name|lower}}/conf"
+	"github.com/techidea8/codectl/app/{{.Project.Name|lower}}/logic"
+	"github.com/techidea8/codectl/infra/restkit"
+	"github.com/techidea8/codectl/infra/restkit/middleware"
+)
+
+var env string
+
+func main() {
+	flag.StringVar(&env, "env", "dev", "envname: prod/dev")
+	flag.Parse()
+	c := conf.DefaultAppConf
+	c.Env = conf.ENVDEF(env)
+	logic.InitApp(c)
+	restkit.ListenAndServe(":8080", restkit.NewHandler("/{{.Project.Name|lower}}").Pre(middleware.CORS(), middleware.NewAccessLog("{{.Project.Name|lower}}-access.log").Serve()))
+}
+{{end}}

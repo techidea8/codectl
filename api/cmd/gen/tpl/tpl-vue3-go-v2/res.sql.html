@@ -1,0 +1,85 @@
+
+{{define "./sql/[prjname]_[module].sql.tpl"}}
+-- ----------------------------
+-- {{.Project.Title}}({{.Project.Name}})不存在则创建
+-- ----------------------------
+INSERT INTO sys_res(type,name,path,title,perm,parentId) 
+SELECT 'CATALOG','{{.Project.Name|lcfirst}}','/{{.Project.Name|lcfirst}}','{{.Project.Title}}','{{.Project.Name|lcfirst}}',0 
+from dual 
+WHERE NOT EXISTS(SELECT type,title FROM sys_res where type='CATALOG' and name = '{{.Project.Name|lcfirst}}' );
+-- ----------------------------
+-- 获取应用ID
+-- ----------------------------
+SELECT @appId := (select id from sys_res where name = '{{.Project.Name|lcfirst}}');
+
+-- ----------------------------
+-- {{.Title}}({{.Module}})不存在则创建
+-- ----------------------------
+insert into sys_res (type,name,component,path,  icon,title,params,parent_id,perm,redirect,sort_index,visible,keep_alive)
+select 'MENU', '{{.Project.Name|lcfirst}}-{{.Module|lcfirst}}', '{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/index', '/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}', '', '{{.Title}}', '{}', @appId, '{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}','', 0, 1,1
+from dual 
+WHERE 
+NOT EXISTS(SELECT type,title FROM sys_res where type='MENU' and name = '{{.Project.Name|lcfirst}}-{{.Module|lcfirst}}' );
+-- ----------------------------
+-- 获取模块ID
+-- ----------------------------
+SELECT @parentId := (select id from sys_res where type='MENU' and name = '{{.Project.Name|lcfirst}}-{{.Module|lcfirst}}');
+
+-- ----------------------------
+-- 搜索
+-- ----------------------------
+insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
+select 'BUTTON','{{.Title}}搜索','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/search',  'search','{{.Module|lcfirst}}-search', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:search',''      ,1          ,0      ,1,'{}' 
+from dual 
+WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:search' and parent_id=@parentId);
+
+-- ----------------------------
+-- 详情
+-- ----------------------------
+insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
+select 'BUTTON','{{.Title}}详情','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/getOne',  'tickets','{{.Module|lcfirst}}-getOne', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:getOne',''      ,2          ,0     ,1,'{}' 
+from dual  
+WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:getOne' and parent_id=@parentId);
+
+-- ----------------------------
+-- 增加
+-- ----------------------------
+insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
+select 'BUTTON','{{.Title}}新增','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/create',  'plus','{{.Module|lcfirst}}-create', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:create',''      ,3          ,0     ,1,'{}' 
+from dual 
+WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:create' and parent_id=@parentId);
+
+-- ----------------------------
+-- 修改
+-- ----------------------------
+insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
+select 'BUTTON','{{.Title}}修改','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/update',  'edit','{{.Module|lcfirst}}-update', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:update',''      ,4          ,0      ,1,'{}' 
+from dual 
+WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:update' and parent_id=@parentId);
+
+-- ----------------------------
+-- 删除
+-- ----------------------------
+insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
+select 'BUTTON','{{.Title}}删除','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/delete',  'delete','{{.Module|lcfirst}}-update', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:delete',''      ,5          ,0      ,1,'{}' 
+from dual 
+WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:delete' and parent_id=@parentId);
+
+-- ----------------------------
+-- 导出
+-- ----------------------------
+insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
+select 'BUTTON','{{.Title}}导出','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/export',  'Download','{{.Module|lcfirst}}-export', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:export',''      ,6          ,0      ,1,'{}' 
+from dual 
+WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:export' and parent_id=@parentId);
+
+-- ----------------------------
+-- 元数据
+-- ----------------------------
+insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
+select 'BUTTON','{{.Title}}元数据','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/meta',  'Download','{{.Module|lcfirst}}-meta', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:meta',''      ,7          ,0      ,1,'{}' 
+from dual 
+WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:meta' and parent_id=@parentId);
+
+
+{{end}}
