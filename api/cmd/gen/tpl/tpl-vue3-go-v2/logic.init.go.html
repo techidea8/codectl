@@ -4,14 +4,12 @@ package logic
 import (
 	"os"
 	"{{.Project.Package}}/app/{{.Project.Name|lower}}/conf"
-	"{{.Project.Package}}/app/{{.Project.Name|lower}}/model"
 	"github.com/techidea8/codectl/infra/dbkit"
-	"github.com/techidea8/codectl/infra/logger"
 )
 
 func InitApp(c *conf.AppConf) {
 	engin, err := dbkit.OpenDb(dbkit.DBTYPE(c.DbType), c.Dsn, dbkit.WithWriter(os.Stdout), dbkit.AutoMigrate(),
-	dbkit.SetLogLevel(logger.LogLevel(c.LogLevel)),
+	dbkit.SetLogLevel(c.LogLevel),
 	)
 	if err != nil {
 		panic(err)

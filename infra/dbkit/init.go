@@ -80,6 +80,9 @@ func OpenDb(dst DBTYPE, dsn string, opts ...Option) (db *gorm.DB, err error) {
 			TablePrefix:   ctx.TablePrefix,
 		},
 	})
+	if err != nil {
+		return nil, err
+	}
 	if len(ctx.ModuleMigrates) > 0 {
 		err = db.AutoMigrate(ctx.ModuleMigrates...)
 	}

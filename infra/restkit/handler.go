@@ -61,6 +61,9 @@ func (h pathHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	handle := func(req Context) (r *wraper.Response, err error) {
 		//CTXPATH/:module/:action
 		paternstr := h.ctxpath + `/([^/^?]+)/([^/^?]+)\??([^?]*)`
+		if h.ctxpath == "" || h.ctxpath == "/" {
+			paternstr = `/([^/^?]+)/([^/^?]+)\??([^?]*)`
+		}
 		patern := regexp.MustCompile(paternstr)
 		result := patern.FindAllStringSubmatch(req.Request().RequestURI, -1)
 		if len(result) < 1 {
@@ -83,7 +86,10 @@ func (h pathHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		// diyige canshu  shi jiegouti
 		reply := method.Func.Call([]reflect.Value{reflect.ValueOf(ptrmodule), reflect.ValueOf(req)})
 		resultwraper := reply[0].Interface()
-		err = reply[1].Interface().(error)
+		err = nil
+		if reply[1].Interface() != nil {
+			err = reply[1].Interface().(error)
+		}
 		if err != nil {
 			wraper.Error(err).Encode(w)
 		} else {

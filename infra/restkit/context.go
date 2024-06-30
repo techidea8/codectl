@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/techidea8/codectl/infra/restkit/validatekit"
 	"github.com/techidea8/codectl/infra/wraper"
 )
 
@@ -62,7 +63,13 @@ func (c *context) Bind(ptrdata any) error {
 }
 
 // 格式校验
+var validate *validator.Validate = validator.New()
+
+func init() {
+	validate.RegisterValidation("passwordscore", validatekit.PasswordScore)
+}
+
 func (c *context) Validate(ptrstru any) error {
-	validate := validator.New()
-	return validate.Struct(ptrstru)
+	err := validate.Struct(ptrstru)
+	return validatekit.ProcessError(ptrstru, err) //处理错误信息
 }
