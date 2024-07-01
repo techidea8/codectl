@@ -3,7 +3,7 @@
 -- ----------------------------
 -- {{.Project.Title}}({{.Project.Name}})不存在则创建
 -- ----------------------------
-INSERT INTO sys_res(type,name,path,title,perm,parentId) 
+INSERT INTO sys_res(type,name,path,title,perm,parent_id) 
 SELECT 'CATALOG','{{.Project.Name|lcfirst}}','/{{.Project.Name|lcfirst}}','{{.Project.Title}}','{{.Project.Name|lcfirst}}',0 
 from dual 
 WHERE NOT EXISTS(SELECT type,title FROM sys_res where type='CATALOG' and name = '{{.Project.Name|lcfirst}}' );
