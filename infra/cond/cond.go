@@ -12,6 +12,8 @@ type Cond struct {
 	Value    interface{} `json:"value"`
 }
 
+const PAGESIZEMAX = 1024 * 1024
+
 // 转换
 func (c Cond) Build() (sql string, value interface{}, err error) {
 	err = nil

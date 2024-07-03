@@ -62,6 +62,17 @@ func (r RawData)BuildColumn(c *Column) *Column{
 	if r.NumberPrecision>0{
 		c.DataSize = int32(r.NumberPrecision)
 	}
+	c.DomType="text"
+	if strings.Contains(c.DataType,"int"){
+		c.DataType="number"
+	}else if strings.Contains(c.DataType,"DateTime") || strings.Contains(c.DataType,"Time") {
+		c.DataType="PickDateTime"
+
+	}else if strings.Contains(c.DataType,"Date"){
+		c.DataType="PickDate"
+	}else {
+		c.DataType="text"
+	}
 	c.IsNullAble = (strings.Compare(r.IsNullAble,"YES")==0)
 	//logger.Debugf(r.ColumnName, r.IsNullAble,"YES",c.IsNullAble)
 	c.RawData = r
