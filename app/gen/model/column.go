@@ -86,6 +86,7 @@ type Column struct {
 	SuportCreate  bool  `gorm:"column:suport_create;type:int" json:"suportCreate"`
 	SuportUpdate  bool  `gorm:"column:suport_update;type:int" json:"suportUpdate"`
 	Sortable  bool  `gorm:"column:sortable;type:int;default:1" json:"sortable"`
+	Hidden  bool  `gorm:"column:hidden;type:int;default:0" json:"hidden"`
 	Serializer    string `gorm:"column:serializer;type:string;size:50" json:"serializer"`
 	RawData RawData `gorm:"column:rawdata;type:string;size:250" json:"rawdata"`
 	

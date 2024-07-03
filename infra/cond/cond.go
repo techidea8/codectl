@@ -84,7 +84,7 @@ func NewListAllWraper() *CondWraper {
 	return &CondWraper{
 		Conds: make([]Cond, 0),
 		Order: Order{},
-		Pager: Pager{Pagefrom: 0},
+		Pager: Pager{Pagefrom: 0, Pagesize: PAGESIZEMAX},
 	}
 }
 func NewCondWrapper() *CondWraper {
