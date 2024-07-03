@@ -204,6 +204,7 @@ func Render(table *model.Table, tpldir string, onfilegennerate ...CallbackFunc) 
 		for _, col := range table.Columns {
 			if col.IsPrimaryKey {
 				primary = col
+				break
 			}
 		}
 		tpldata := ExportVO{

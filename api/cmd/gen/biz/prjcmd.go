@@ -44,7 +44,6 @@ func (s *prjctrl) list(args []string) error {
 			prj.DbName,
 			prj.Dsn,
 			prj.Prefix,
-
 			prj.TplId,
 			prj.Package,
 			prj.Dirsave,

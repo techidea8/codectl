@@ -24,6 +24,6 @@ type Project struct {
 }
 
 // TableName Project's table name
-func (*Project) TableName() string {
-	return TableNameProject
-}
+// func (*Project) TableName() string {
+// 	return TableNameProject
+// }

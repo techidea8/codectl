@@ -20,6 +20,6 @@ type Table struct {
 }
 
 // TableName Table's table name
-func (*Table) TableName() string {
-	return TableNameTable
-}
+// func (*Table) TableName() string {
+// 	return TableNameTable
+// }

@@ -16,4 +16,8 @@ type {{.Module|ucfirst}} struct{
         {{ $v.DataColumn | upercamel }} {{ $v.DataType }} `json:"{{ $v.DataColumn | camel }}" {{if eq $v.DataType "types.Date"}}time_format:"2006-01-02" time_utc:"1" {{end}}{{if or (eq $v.DataType "types.DateTime") (eq $v.DataType "time.Time")}}time_format:"2006-01-02 15:04:05" time_utc:"1" {{end}} form:"{{ $v.DataColumn | camel }}"  validate:"{{if eq $v.SuportCreate true}}required{{else}}omitempty{{end}}"`
     {{end}}
 }
+// {{.Title}}批量处理
+type {{.Module|ucfirst}}KeyBatch struct {
+	{{.Primary.DataColumn|ucfirst}}s []int64 `json:"{{.Primary.DataColumn|lcfirst}}s"  form:"{{.Primary.DataColumn|lcfirst}}s"  validate:"min=1" errmsg:"缺少{{.Primary.Title}}"`
+}
 {{end}}

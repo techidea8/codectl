@@ -61,7 +61,15 @@ WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.
 -- 删除
 -- ----------------------------
 insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
-select 'BUTTON','{{.Title}}删除','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/delete',  'delete','{{.Module|lcfirst}}-update', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:delete',''      ,5          ,0      ,1,'{}' 
+select 'BUTTON','{{.Title}}删除单条','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/delete',  'delete','{{.Module|lcfirst}}-delete', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:delete',''      ,5          ,0      ,1,'{}' 
+from dual 
+WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:delete' and parent_id=@parentId);
+
+-- ----------------------------
+-- 批量删除
+-- ----------------------------
+insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
+select 'BUTTON','{{.Title}}批量删除','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/deleteIts',  'delete','{{.Module|lcfirst}}-deleteIts', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:deleteIts',''      ,5          ,0      ,1,'{}' 
 from dual 
 WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:delete' and parent_id=@parentId);
 
@@ -69,7 +77,7 @@ WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.
 -- 导出
 -- ----------------------------
 insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
-select 'BUTTON','{{.Title}}导出','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/export',  'Download','{{.Module|lcfirst}}-export', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:export',''      ,6          ,0      ,1,'{}' 
+select 'BUTTON','{{.Title}}导出','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/export',  'Download','{{.Module|lcfirst}}-export', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:export',''      ,7          ,0      ,1,'{}' 
 from dual 
 WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:export' and parent_id=@parentId);
 
@@ -77,7 +85,7 @@ WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.
 -- 元数据
 -- ----------------------------
 insert into sys_res (type      ,title    ,path              , icon      ,name          , parent_id,                                                   perm,redirect,sort_index,visible,keep_alive,params)
-select 'BUTTON','{{.Title}}元数据','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/meta',  'Download','{{.Module|lcfirst}}-meta', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:meta',''      ,7          ,0      ,1,'{}' 
+select 'BUTTON','{{.Title}}元数据','/{{.Project.Name|lcfirst}}/{{.Module|lcfirst}}/meta',  'Download','{{.Module|lcfirst}}-meta', @parentId,'{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:meta',''      ,8          ,0      ,1,'{}' 
 from dual 
 WHERE NOT EXISTS(select * from sys_res where perm='{{.Project.Name|lcfirst}}:{{.Module|lcfirst}}:meta' and parent_id=@parentId);
 

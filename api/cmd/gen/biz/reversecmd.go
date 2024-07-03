@@ -36,6 +36,10 @@ func reverse(args []string) (err error) {
 	if env == string(conf.PROD) {
 		loglevel = logger.ErrorLevel
 	}
+	if prj.ID == 0 {
+		err = fmt.Errorf("缺少项目配置")
+		return
+	}
 	// 导出的数据库
 	exportdb, err := dbkit.OpenDb(dbkit.DBTYPE(prj.DbType), prj.Dsn, dbkit.WithWriter(os.Stdout), dbkit.SetLogLevel(int32(loglevel)))
 	if err != nil {

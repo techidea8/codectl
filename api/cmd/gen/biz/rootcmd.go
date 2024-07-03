@@ -1,9 +1,11 @@
 package biz
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra" // 安装依赖 go get -u github.com/spf13/cobra/cobra
+	"github.com/spf13/viper"
 	"github.com/techidea8/codectl/app/gen/conf"
 	"github.com/techidea8/codectl/app/gen/logic"
 	"github.com/techidea8/codectl/infra/logger"
@@ -24,6 +26,15 @@ func Execute() {
 	cobra.OnInitialize(func() {
 		c := conf.DefaultAppConf
 		c.Env = conf.ENVDEF(env)
+		if configfile != "" {
+			vp := viper.New()
+			vp.SetConfigFile(configfile)
+			if err := vp.ReadInConfig(); err != nil {
+				fmt.Println(err.Error())
+				return
+			}
+			vp.Unmarshal(c)
+		}
 		if env == string(conf.DEV) {
 			logger.SetLevel(logger.DebugLevel)
 		} else {
@@ -44,4 +55,5 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&env, "env", "e", string(conf.PROD), "ENV OF APP: prod/dev")
+	rootCmd.PersistentFlags().StringVarP(&configfile, "conf", "c", "", "config file path:eg app.yaml")
 }

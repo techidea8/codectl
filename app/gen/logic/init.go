@@ -18,6 +18,7 @@ func InitApp(c *conf.AppConf) {
 	filewriter, err := dbkit.FileWriter(c.LogFile)
 	if err != nil {
 		fmt.Println(err.Error())
+		return
 	}
 	engin, err := dbkit.OpenDb(dbkit.DBTYPE(c.DbType), c.Dsn,
 		dbkit.WithWriter(os.Stdout, filewriter),
@@ -26,7 +27,7 @@ func InitApp(c *conf.AppConf) {
 		dbkit.ParameterizedQueries(true),
 		dbkit.SetLogLevel(int32(level)),
 		dbkit.SingularTable(true),
-		dbkit.AutoMigrate(&model.Project{}),
+		dbkit.AutoMigrate(&model.Project{}, &model.Table{}, &model.Column{}),
 	)
 	if err != nil {
 		panic(err)

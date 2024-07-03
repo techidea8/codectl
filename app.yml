@@ -1,12 +1,6 @@
-gen:
-  dsn:
-  dst: mysql
-  env: prod
-  logFile: gen.log
-
-sys:
-  dst: mysql
-  dsn: root:flzx3kc@qwe@tcp(119.91.40.151:3306)/turing?charset=utf8mb4&parseTime=true&local=Local
-  env: prod
-  logFile: sys.log
-  
+dbtype: mysql
+dsn: root:flzx3kc@qwe@tcp(119.91.40.151:3306)/turing?charset=utf8mb4&parseTime=true&loc=Local
+env: prod
+logFile: sys.log
+logLevel: 4
+prefix: gen_

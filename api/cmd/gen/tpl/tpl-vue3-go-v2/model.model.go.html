@@ -10,7 +10,8 @@ import
 	{{end}}
 )
 const TableName{{.Module|ucfirst}} = "{{.Name}}"
-
+const TableTitle{{.Module|ucfirst}} = "{{.Title}}"
+const Table{{.Module|ucfirst}} = "{{.Module}}"
 var {{.Module}}Keys []string= []string{ {{- range $i,$v := .Columns}}"{{ $v.DataColumn | camel }}",{{end}} }
 //{{.Title}}数据库模型
 type {{.Module|ucfirst}} struct{

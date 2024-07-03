@@ -9,6 +9,6 @@ import (
 
 // 入口函数
 func main() {
-	biz.Execute()
 	tpl.Release()
+	biz.Execute()
 }

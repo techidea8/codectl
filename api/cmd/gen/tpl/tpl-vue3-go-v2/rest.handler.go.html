@@ -4,13 +4,12 @@ package handler
 import (
 	"{{.Project.Package}}/app/{{.Project.Name|lower}}/logic"
 	"{{.Project.Package}}/app/{{.Project.Name|lower}}/model"
+	"{{.Project.Package}}/api/rest/{{.Project.Name|lower}}/vo"
 	"github.com/techidea8/codectl/infra/cond"
 	"github.com/techidea8/codectl/infra/restkit"
 	"github.com/techidea8/codectl/infra/wraper"
 	"github.com/techidea8/codectl/infra/xlskit"
 	genlogic "github.com/techidea8/codectl/app/gen/logic"
-	"reflect"
-	"github.com/techidea8/codectl/infra/utils/stringx"
 
 )
 // 声明结构体
@@ -63,53 +62,59 @@ func (ctrl *{{.Module|ucfirst}}) Delete(ctx restkit.Context) (r *wraper.Response
 	return wraper.OkData(total).WithMsg("{{.Title}}删除成功"), err
 }
 
+// 根据主键批量删除{{.Title}}
+func (ctrl *{{.Module|ucfirst}}) DeleteBatch(ctx restkit.Context) (r *wraper.Response, err error) {
+	cond := &vo.{{.Module|ucfirst}}KeyBatch{}
+	err = ctx.Bind(cond)
+	if err != nil {
+		return wraper.Error(err), err
+	}
+	instance := &model.{{.Module|ucfirst}}{}
+	total, err := logic.Delete(instance, "{{.Primary.RawData.ColumnName}} = ?", cond.{{.Primary.DataColumn|ucfirst}}s)
+	return wraper.OkData(total).WithMsg("{{.Title}}删除成功"), err
+}
 // 导出{{.Title}}
 func (ctrl *{{.Module|ucfirst}}) Export(ctx restkit.Context) (r *wraper.Response, err error) {
-	condwraper := cond.NewCondWrapper()
+	condwraper := cond.NewExport()
 	err = ctx.Bind(condwraper)
 	if err != nil {
 		return wraper.Error(err), err
 	}
 	instance := &model.{{.Module|ucfirst}}{}
-	rows, _, err := logic.Search(instance, condwraper)
+	rows, _, err := logic.Search(instance, condwraper.Cond)
 	if err != nil {
 		return wraper.Error(err), err
 	}
 	//
-	modulename := stringx.Lcfirst(reflect.TypeOf(ctrl).Elem().Name())
-	metas, err := genlogic.MetaFromModuleName(modulename)
-	if err != nil {
-		return wraper.Error(err), err
-	}
+	
 
 	metaArr := make([]xlskit.Meta, 0)
-	for _, v := range metas {
+	for _, v := range condwraper.Meta {
 		metaArr = append(metaArr, xlskit.Meta{
-			Field: v.DataColumn,
-			Title: v.Title,
+			Field: v.Prop,
+			Title: v.Label,
 		})
 	}
 	dataMap := make([]map[string]any, 0)
-	for _, v := range rows {
-		dataMap = append(dataMap, v.TOMAP())
+	for i := range rows {
+		dataMap = append(dataMap, rows[i].TOMAP())
 	}
 	// 创建一个工作表
-	xlsxctrl := xlskit.NewXlsCtrl(modulename)
+	xlsxctrl := xlskit.NewXlsCtrl(model.TableTitle{{.Module|ucfirst}})
 	buf, err := xlsxctrl.Render(metaArr, dataMap)
 	if err != nil {
 		return wraper.Error(err), err
 	}
 	return wraper.Blob(wraper.BlobDef{
 		File:        buf.Bytes(),
-		Name:        "{{.Title}}.xls",
+		Name:        model.TableTitle{{.Module|ucfirst}}+".xls",
 		ContentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 	}), err
 }
 
 // {{.Title}}的meta
 func (ctrl *{{.Module|ucfirst}}) Meta(ctx restkit.Context) (r *wraper.Response, err error) {
-	moduleName := "{{.Module|lcfirst}}"
-	metas, err := genlogic.MetaFromModuleName(moduleName)
+	metas, err := genlogic.MetaFromModuleName(model.Table{{.Module|ucfirst}})
 	return wraper.OkData(metas), err
 }
 

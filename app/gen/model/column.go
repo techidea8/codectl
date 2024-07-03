@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
 const TableNameColumn = "column"
@@ -83,13 +85,18 @@ type Column struct {
 	SuportSearch  bool  `gorm:"column:suport_search;type:int" json:"suportSearch"`
 	SuportCreate  bool  `gorm:"column:suport_create;type:int" json:"suportCreate"`
 	SuportUpdate  bool  `gorm:"column:suport_update;type:int" json:"suportUpdate"`
+	Sortable  bool  `gorm:"column:sortable;type:int;default:1" json:"sortable"`
 	Serializer    string `gorm:"column:serializer;type:string;size:50" json:"serializer"`
-	RawData RawData `gorm:"column:rawdata;type:string;size:50" json:"rawdata"`
+	RawData RawData `gorm:"column:rawdata;type:string;size:250" json:"rawdata"`
 	
 }
-
+// TableName Column's table name
+func (s *Column) BeforeCreate(*gorm.DB) error {
+	
+	return nil
+}
 
 // TableName Column's table name
-func (*Column) TableName() string {
-	return TableNameColumn
-}
+// func (*Column) TableName() string {
+// 	return TableNameColumn
+// }

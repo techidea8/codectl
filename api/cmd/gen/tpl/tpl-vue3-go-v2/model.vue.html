@@ -1,0 +1,25 @@
+{{define "./console/src/views/[prjname]/[model]/index.vue.tpl"}}
+<template>
+	<div class="app-container">
+		  <ModuleCrud :handlers="handlers" :context="context" :meta="meta"></ModuleCrud>
+	</div>
+  </template>
+  
+  <script setup lang="ts">
+  import {ref} from "vue"
+  import {{.Module|camel|js}}Api from "@/api/{{.Module|camel}}"
+  const context = ref({
+	perm:'{{.Project.Name|camel}}:{{.Module|camel}}',
+	name:"{{.Module|camel}}",
+	title:"{{.Title}}",
+	primaryKey:"{{.Primary.DataColumn | camel}}",
+  }) 
+  const meta = ref([
+  {type:'selection','column-key':"{{.Primary.DataColumn | camel}}",prop:"{{.Primary.DataColumn | camel}}","width":80}, 
+  {{- range $i,$v := .Columns}}
+	{ prop:"{{$v.DataColumn | camel}}",domType:"{{$v.DomType}}",dataType:"{{$v.DataType}}",label:"{{$v.Title}}",sortable:{{$v.Sortable}},suportSearch:{{$v.SuportSearch}},suportCreate:{{$v.SuportCreate}},suportUpdate:{{$v.SuportUpdate}} },
+	{{end}}
+  ])
+  const handlers = ref({{.Module|camel|js}}Api)
+  </script>
+{{end}}

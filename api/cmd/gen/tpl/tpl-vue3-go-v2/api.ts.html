@@ -1,5 +1,5 @@
 {{define "./console/src/api/[model].ts.tpl"}}
-import { request } from "@/utils/service"
+import  request  from "@/utils/request"
 import {ICond} from "./types"
 const prefix = "/{{.Module|lcfirst}}"
 
@@ -56,16 +56,24 @@ export function deleteIt({{.Primary.DataColumn|lcfirst}} : string|number) {
   })
 }
 
-//导出某一条{{.Title}}
-export function exportxls({{.Primary.DataColumn|lcfirst}}:any) {
+//删除多条{{.Title}}
+export function deleteIts({{.Primary.DataColumn|lcfirst}}s : string[]|number[]) {
+  return request({
+    url: prefix+'/deleteIts',
+    method: 'post',
+    data:{
+      {{.Primary.DataColumn|lcfirst}}s
+    }
+  })
+}
 
+//根据条件导出{{.Title}}
+export function exportxls(cond:any) {
   return request({
     url: prefix+'/export',
     method: 'post',
     responseType: 'blob',
-    data:{
-      {{.Primary.DataColumn|lcfirst}}
-    }
+    data:cond
   })
 }
 //导出{{.Title}}的meta信息
@@ -79,6 +87,5 @@ export function meta({{.Primary.DataColumn|lcfirst}}:any) {
   })
 }
 //默认导出全部API
-export default {search,create,update,deleteIt,getOne,exportxls,meta}
-
+export default {search,create,update,deleteIt,deleteIts,getOne,exportxls,meta}
 {{end}}
