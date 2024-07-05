@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 )
@@ -12,13 +13,17 @@ type LogrusImpl struct {
 	logger *logrus.Logger
 }
 
+func TOLogrunsLevel(level LogLevel) logrus.Level {
+	_r, _ := logrus.ParseLevel(strings.ToLower(level))
+	return _r
+}
 func NewLogrus(filepath string, level LogLevel) LogrusImpl {
 
 	// 创建一个新的 logger
 	loggerus := logrus.New()
 	w1 := os.Stdout
 	// 设置日志级别
-	loggerus.SetLevel(logrus.Level(level))
+	loggerus.SetLevel(TOLogrunsLevel(level))
 	// 创建一个文件句柄，用于写入日志
 	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
@@ -35,7 +40,7 @@ func NewLogrus(filepath string, level LogLevel) LogrusImpl {
 	}
 }
 func (l LogrusImpl) SetLevel(level LogLevel) {
-	l.logger.SetLevel(logrus.Level(level))
+	l.logger.SetLevel(TOLogrunsLevel(level))
 }
 func (l LogrusImpl) Debug(arg ...any) {
 	l.logger.Debug(arg...)

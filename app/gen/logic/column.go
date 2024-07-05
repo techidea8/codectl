@@ -52,7 +52,7 @@ func BuildColumnFromMysqlSchema(dbengin *gorm.DB, dbname, tablename string) (com
 	COLUMN_TYPE as column_type,
 	EXTRA as extra,
 	ORDINAL_POSITION as ordinal_position  
-	from information_schema.columns where  table_schema = ? and  table_name = ?`, dbname, tablename).Scan(&rawdatas).Error
+	from information_schema.columns where  table_schema = ? and  table_name = ? order by ORDINAL_POSITION asc`, dbname, tablename).Scan(&rawdatas).Error
 	comumns = make([]model.Column, 0)
 	for _, raw := range rawdatas {
 		comumn := &model.Column{}

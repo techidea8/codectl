@@ -25,7 +25,7 @@ func InitApp(c *conf.AppConf) {
 		dbkit.WithPrefix(c.Prefix),
 		dbkit.IgnoreRecordNotFoundError(true),
 		dbkit.ParameterizedQueries(true),
-		dbkit.SetLogLevel(int32(level)),
+		dbkit.SetLogLevel(level),
 		dbkit.SingularTable(true),
 		dbkit.AutoMigrate(&model.Project{}, &model.Table{}, &model.Column{}),
 	)

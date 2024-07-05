@@ -3,7 +3,7 @@ package wraper
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -56,7 +56,7 @@ func Bind(req *http.Request, obj interface{}) error {
 }
 
 func BindJson(req *http.Request, ptr interface{}) error {
-	s, err := ioutil.ReadAll(req.Body) //把  body 内容读入字符串
+	s, err := io.ReadAll(req.Body) //把  body 内容读入字符串
 	if err != nil {
 		return err
 	}

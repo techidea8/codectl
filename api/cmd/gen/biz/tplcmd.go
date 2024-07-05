@@ -16,8 +16,8 @@ import (
 	"github.com/techidea8/codectl/app/gen/conf"
 	"github.com/techidea8/codectl/app/gen/logic"
 	"github.com/techidea8/codectl/app/gen/model"
+	"github.com/techidea8/codectl/infra/filekit"
 	"github.com/techidea8/codectl/infra/logger"
-	"github.com/techidea8/codectl/infra/utils/dir"
 	"github.com/techidea8/codectl/infra/utils/wintool"
 )
 
@@ -68,7 +68,7 @@ func (s *tplctrl) add(args []string) (err error) {
 func (s *tplctrl) add_local(args []string) (err error) {
 	src := args[0]
 
-	total, err := dir.Copy(src, s.tpldir)
+	total, err := filekit.Copy(src, s.tpldir)
 	fmt.Printf("copy %s to %s , num = %d", src, s.tpldir, total)
 	if err != nil {
 		return err

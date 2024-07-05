@@ -1,6 +1,7 @@
 package restkit
 
 import (
+	"fmt"
 	"net/http"
 	"reflect"
 	"regexp"
@@ -67,21 +68,21 @@ func (h pathHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		patern := regexp.MustCompile(paternstr)
 		result := patern.FindAllStringSubmatch(req.Request().RequestURI, -1)
 		if len(result) < 1 {
-			wraper.Error("当前服务" + req.Request().RequestURI + "不存在").HttpStatus(http.StatusNotFound).Encode(w)
-			return
+			return wraper.Error("当前服务" + req.Request().RequestURI + "不存在").HttpStatus(http.StatusNotFound), fmt.Errorf("当前服务" + req.Request().RequestURI + "不存在")
 		}
 		arr := result[0]
 		// 找不到系统服务
 		if len(arr) < 3 {
-			wraper.Error("当前服务" + req.Request().RequestURI + "不存在").HttpStatus(http.StatusNotFound).Encode(w)
-			return
+			return wraper.Error("当前服务" + req.Request().RequestURI + "不存在").HttpStatus(http.StatusNotFound), fmt.Errorf("当前服务" + req.Request().RequestURI + "不存在")
 		}
 		module := stringx.Ucfirst(arr[1])
 		action := stringx.Ucfirst(arr[2])
 		ptrmodule, method, e := h.router.Dispatch(module, action)
 		if e != nil {
-			wraper.Error(e).Encode(w)
-			return
+			return wraper.Error(e).HttpStatus(http.StatusNotFound), fmt.Errorf("当前服务" + e.Error())
+		}
+		if ptrmodule == nil {
+			return wraper.Error(e).HttpStatus(http.StatusNotFound), fmt.Errorf("当前服务" + req.Request().RequestURI + "不存在")
 		}
 		// diyige canshu  shi jiegouti
 		reply := method.Func.Call([]reflect.Value{reflect.ValueOf(ptrmodule), reflect.ValueOf(req)})
@@ -93,7 +94,12 @@ func (h pathHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			return wraper.Error(err), err
 		} else {
-			return resultwraper.(*wraper.Response), nil
+			if resultwraper == nil {
+				logger.Infof("empty when %s", req.Request().RequestURI)
+				return wraper.Empty(), nil
+			} else {
+				return resultwraper.(*wraper.Response), nil
+			}
 		}
 	}
 

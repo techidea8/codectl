@@ -10,10 +10,9 @@ import (
 	"github.com/techidea8/codectl/app/gen/model"
 	"github.com/techidea8/codectl/infra/cond"
 	"github.com/techidea8/codectl/infra/dbkit"
+	"github.com/techidea8/codectl/infra/filekit"
 	"github.com/techidea8/codectl/infra/logger"
 	"github.com/techidea8/codectl/infra/restkit"
-	"github.com/techidea8/codectl/infra/utils/file"
-	"github.com/techidea8/codectl/infra/utils/parse"
 	"github.com/techidea8/codectl/infra/wraper"
 	"gorm.io/gorm"
 )
@@ -46,13 +45,13 @@ func (ctrl *table) Export(ctx restkit.Context) (r *wraper.Response, err error) {
 	// 查询数据库
 	// 解析prj.Dsn 获得databasename
 
-	exportdb, err := dbkit.OpenDb(dbkit.DBTYPE(prj.DbType), prj.Dsn, dbkit.WithWriter(os.Stdout), dbkit.SetLogLevel(int32(logger.ErrorLevel)))
+	exportdb, err := dbkit.OpenDb(dbkit.DBTYPE(prj.DbType), prj.Dsn, dbkit.WithWriter(os.Stdout), dbkit.SetLogLevel(logger.ErrorLevel))
 
 	if err != nil {
 		logger.Error(err.Error(), "dsn", prj.Dsn)
 		return
 	}
-	dbconf := parse.ParseMysql(prj.Dsn)
+	dbconf := dbkit.ParseMysql(prj.Dsn)
 	dbname := dbconf.Dbname
 	tablename := param.Name
 	table := &model.Table{
@@ -158,7 +157,7 @@ func (ctrl *table) Export(ctx restkit.Context) (r *wraper.Response, err error) {
 
 	tmpfile, err := os.CreateTemp("/tmp", "codectltemp.*.zip")
 
-	err = file.ZipFiles(tmpfile, files)
+	err = filekit.ZipFiles(tmpfile, files)
 	if err != nil {
 		return wraper.Error(err), err
 	}

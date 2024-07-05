@@ -2,7 +2,7 @@ package logic
 
 import (
 	"github.com/techidea8/codectl/app/gen/model"
-	"github.com/techidea8/codectl/infra/utils/slice"
+	"github.com/techidea8/codectl/infra/slicekit"
 )
 
 func BuildMethod(methodArr []string) []model.Method {
@@ -11,7 +11,7 @@ func BuildMethod(methodArr []string) []model.Method {
 		tmp = append(tmp, model.Method{
 			Name:   method.Name,
 			Title:  method.Title,
-			Enable: slice.Contains(methodArr, method.Name),
+			Enable: slicekit.Contains(methodArr, method.Name),
 		})
 	}
 	return tmp

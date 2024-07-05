@@ -27,10 +27,17 @@ func (s *reversectrl) Init() {
 
 }
 func reverse(args []string) (err error) {
+	// 配置文件展示加载的规则
+	if rulefile != "" {
+		conf.ResetMapperRule(rulefile)
+	}
 	//首先获得全部表格
 	prj, err := logic.TakeCurrentProject()
 	if err != nil {
 		return err
+	}
+	if dirsave != "" {
+		prj.Dirsave = dirsave
 	}
 	loglevel := logger.InfoLevel
 	if env == string(conf.PROD) {
@@ -41,7 +48,7 @@ func reverse(args []string) (err error) {
 		return
 	}
 	// 导出的数据库
-	exportdb, err := dbkit.OpenDb(dbkit.DBTYPE(prj.DbType), prj.Dsn, dbkit.WithWriter(os.Stdout), dbkit.SetLogLevel(int32(loglevel)))
+	exportdb, err := dbkit.OpenDb(dbkit.DBTYPE(prj.DbType), prj.Dsn, dbkit.WithWriter(os.Stdout), dbkit.SetLogLevel(loglevel))
 	if err != nil {
 		return err
 	}
@@ -50,6 +57,10 @@ func reverse(args []string) (err error) {
 		return err
 	}
 	for _, tb := range tables {
+		if !strings.Contains(tb.Name, prj.Prefix) {
+			logger.Debugf("ignore  %s because of %s", tb.Name, prj.Prefix)
+			continue
+		}
 		// module name
 		modulename := stringx.UnderlineToCamelCase(strings.TrimPrefix(tb.Name, prj.Prefix))
 
@@ -96,5 +107,7 @@ var reverseCmd = &cobra.Command{
 }
 
 func init() {
+	reverseCmd.Flags().StringVarP(&rulefile, "rule", "r", "", "rule config file,like mapper.yml")
+	reverseCmd.Flags().StringVarP(&dirsave, "dirsave", "d", "", "dir for save")
 	rootCmd.AddCommand(reverseCmd)
 }

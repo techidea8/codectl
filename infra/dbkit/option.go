@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	ctllogger "github.com/techidea8/codectl/infra/logger"
 	"gorm.io/gorm/logger"
 )
 
@@ -19,11 +20,10 @@ func AutoMigrate(obj ...interface{}) Option {
 }
 
 // SetLogLevel
-func SetLogLevel(level int32) Option {
+func SetLogLevel(level ctllogger.LogLevel) Option {
 	return func(ctx *DbContext) {
-
 		//fmt.Println("SetLogLevel(level int32),%s ", level, TOString(logger.LogLevel(level)))
-		ctx.LogLevel = logger.LogLevel(level)
+		ctx.LogLevel = TOGormLogLevel(level)
 	}
 }
 
@@ -62,6 +62,12 @@ func ParameterizedQueries(f bool) Option {
 	}
 }
 
+func Debug(f bool) Option {
+	return func(ctx *DbContext) {
+		ctx.Debug = f
+	}
+}
+
 type DbContext struct {
 	LogLevel                  logger.LogLevel
 	IgnoreRecordNotFoundError bool
@@ -70,6 +76,7 @@ type DbContext struct {
 	TablePrefix               string
 	SingularTable             bool
 	ModuleMigrates            []interface{}
+	Debug                     bool
 }
 
 func NewDbContext() *DbContext {
@@ -81,5 +88,6 @@ func NewDbContext() *DbContext {
 		TablePrefix:               "",
 		SingularTable:             true,
 		ModuleMigrates:            make([]interface{}, 0),
+		Debug:                     false,
 	}
 }

@@ -100,6 +100,12 @@ func (c *CondWraper) AddCond(cond ...Cond) *CondWraper {
 	c.Conds = append(c.Conds, cond...)
 	return c
 }
+func (c *CondWraper) AddOneCond(field string, op OPTYPE, value any) *CondWraper {
+	c.Conds = append(c.Conds, Cond{
+		Field: field, Op: op, Value: value,
+	})
+	return c
+}
 func (c *CondWraper) SetPager(pager Pager) *CondWraper {
 	c.Pager = pager
 	return c

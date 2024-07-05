@@ -1,6 +1,8 @@
 package biz
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra" // 安装依赖 go get -u github.com/spf13/cobra/cobra
 )
 
@@ -38,7 +40,7 @@ sql run
     run a sql file 
 `,
 	Run: func(cmd *cobra.Command, args []string) { //这里是命令的执行方法
-
+		fmt.Println("not implents!!")
 	},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		//这个在命令执行前执行

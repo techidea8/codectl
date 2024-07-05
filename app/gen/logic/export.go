@@ -3,8 +3,6 @@ package logic
 import (
 	"fmt"
 	"html/template"
-	"io/fs"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -13,9 +11,11 @@ import (
 	"github.com/techidea8/codectl/app/gen/conf"
 	"github.com/techidea8/codectl/app/gen/model"
 	"github.com/techidea8/codectl/infra/cond"
+	"github.com/techidea8/codectl/infra/dbkit"
+	"github.com/techidea8/codectl/infra/filekit"
 	"github.com/techidea8/codectl/infra/logger"
-	"github.com/techidea8/codectl/infra/utils/parse"
-	"github.com/techidea8/codectl/infra/utils/slice"
+	"github.com/techidea8/codectl/infra/slicekit"
+	"github.com/techidea8/codectl/infra/timekit"
 	"github.com/techidea8/codectl/infra/utils/stringx"
 	"gorm.io/gorm"
 )
@@ -53,7 +53,7 @@ func PrepareExportTable(vo *PrepareVo) (table *model.Table, err error) {
 		ProjectID: prj.ID,
 		Name:      vo.TableName,
 	}
-	dbconf := parse.ParseMysql(prj.Dsn)
+	dbconf := dbkit.ParseMysql(prj.Dsn)
 	dbname := dbconf.Dbname
 	// 取数据,有没有现成的
 	table, err = Take(table, *cond.NewCondWrapper())
@@ -164,13 +164,14 @@ func Render(table *model.Table, tpldir string, onfilegennerate ...CallbackFunc) 
 		"upercamel": stringx.UnderlineToUperCamelCase,
 		"camel":     stringx.UnderlineToCamelCase,
 		"contains":  strings.Contains,
-		"has":       slice.HasSubStr,
+		"has":       slicekit.HasSubStr,
 	})
 	tpldir = path.Join(tpldir, table.Project.TplId)
 	tmpls, err = tmpls.ParseGlob(tpldir + "/*.html")
 	if err != nil {
 		return err
 	}
+	batchIndex := timekit.DateTimeNow(timekit.YYYYMMDDhhmmsspure)
 	for _, tpl := range tmpls.Templates() {
 		tplName := tpl.Name()
 		//过滤掉以html结尾的
@@ -187,8 +188,26 @@ func Render(table *model.Table, tpldir string, onfilegennerate ...CallbackFunc) 
 
 		dstFile = filepath.Join(table.Project.Dirsave, dstFile)
 		dstFile = strings.TrimSuffix(dstFile, ".tpl")
-		os.MkdirAll(filepath.Dir(dstFile), fs.FileMode(os.O_CREATE))
-
+		os.MkdirAll(filepath.Dir(dstFile), os.ModeDir)
+		// 如果存在直接备份
+		if filekit.Exists(dstFile) {
+			bakfile := dstFile + ".bak." + batchIndex
+			buf, err := os.ReadFile(dstFile)
+			if err != nil {
+				logger.Error(err.Error())
+				return err
+			}
+			err = os.WriteFile(bakfile, buf, 0755)
+			if err != nil {
+				logger.Error(err.Error())
+				return err
+			}
+			// err = os.Rename(dstFile, dstFile+"_"+batchIndex)
+			// if err != nil {
+			// 	logger.Error(err.Error())
+			// 	return err
+			// }
+		}
 		f, e := os.OpenFile(dstFile, os.O_WRONLY|os.O_CREATE, 0766)
 		if e != nil {
 			return e
@@ -197,7 +216,8 @@ func Render(table *model.Table, tpldir string, onfilegennerate ...CallbackFunc) 
 		//文件需要再次清空
 		err = f.Truncate(0)
 		if err != nil {
-			log.Fatalln(err.Error())
+			f.Close()
+			logger.Error(err.Error())
 			return
 		}
 		primary := model.Column{}
@@ -207,12 +227,16 @@ func Render(table *model.Table, tpldir string, onfilegennerate ...CallbackFunc) 
 				break
 			}
 		}
+		rows := table.Columns
+		rows1 := slicekit.Sort(rows, func(col1, col2 model.Column) bool {
+			return col1.RawData.OrdinalPosition < col2.RawData.OrdinalPosition
+		})
 		tpldata := ExportVO{
 			Name:    table.Name,
 			Title:   table.Title,
 			Module:  table.Module,
 			Method:  table.Method,
-			Columns: table.Columns,
+			Columns: rows1,
 			Primary: primary,
 			Package: table.Project.Package,
 			TplId:   table.Project.TplId,
@@ -221,20 +245,21 @@ func Render(table *model.Table, tpldir string, onfilegennerate ...CallbackFunc) 
 			Project: table.Project,
 		}
 		err = tpl.ExecuteTemplate(f, tplName, tpldata)
+		f.Close()
 		if err != nil {
 			logger.Error("error", err.Error())
 			continue
 		}
-		f.Close()
 		buf, _ := os.ReadFile(dstFile)
+
 		content := string(buf)
 		content = strings.ReplaceAll(content, "&lt;", "<")
 		err = os.WriteFile(dstFile, []byte(content), 0766)
 		if err != nil {
 			continue
 		}
-		for _, c := range onfilegennerate {
-			c(dstFile)
+		for _, callback := range onfilegennerate {
+			callback(dstFile)
 		}
 	}
 	os.Remove(rootname)

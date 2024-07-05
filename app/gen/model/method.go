@@ -7,7 +7,7 @@ type Method struct {
 }
 
 var SimpleMethods []string = []string{
-	"create", "create", "update", "delete", "getOne", "export", "meta",
+	"create", "create", "update", "delete", "getOne", "export", "meta", "deleteIts", "print",
 }
 var AllSuportMethods []Method = []Method{
 	{Name: "search", Enable: true, Title: "搜索"},
@@ -17,4 +17,6 @@ var AllSuportMethods []Method = []Method{
 	{Name: "getOne", Enable: true, Title: "查询"},
 	{Name: "export", Enable: true, Title: "下载"},
 	{Name: "meta", Enable: true, Title: "元数据"},
+	{Name: "deleteIts", Enable: true, Title: "批量删除"},
+	{Name: "print", Enable: false, Title: "打印"},
 }

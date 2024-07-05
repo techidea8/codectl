@@ -64,12 +64,11 @@ func (r RawData)BuildColumn(c *Column) *Column{
 	}
 	c.DomType="text"
 	if strings.Contains(c.DataType,"int"){
-		c.DataType="number"
+		c.DomType="number"
 	}else if strings.Contains(c.DataType,"DateTime") || strings.Contains(c.DataType,"Time") {
-		c.DataType="PickDateTime"
-
+		c.DomType="datetime"
 	}else if strings.Contains(c.DataType,"Date"){
-		c.DataType="PickDate"
+		c.DomType="date"
 	}else {
 		c.DataType="text"
 	}
@@ -93,9 +92,9 @@ type Column struct {
 	IsNullAble       bool `gorm:"column:is_nullable;type:int" json:"isNullAble"`
 	Placeholder   string `gorm:"column:placeholder;type:string;size:50" json:"placeholder"`
 	Option        string `gorm:"column:option;type:string;size:250" json:"option"`
-	SuportSearch  bool  `gorm:"column:suport_search;type:int" json:"suportSearch"`
-	SuportCreate  bool  `gorm:"column:suport_create;type:int" json:"suportCreate"`
-	SuportUpdate  bool  `gorm:"column:suport_update;type:int" json:"suportUpdate"`
+	SuportSearch  bool  `gorm:"column:suport_search;type:int;default:1" json:"suportSearch"`
+	SuportCreate  bool  `gorm:"column:suport_create;type:int;default:1" json:"suportCreate"`
+	SuportUpdate  bool  `gorm:"column:suport_update;type:int;default:1" json:"suportUpdate"`
 	Sortable  bool  `gorm:"column:sortable;type:int;default:1" json:"sortable"`
 	Hidden  bool  `gorm:"column:hidden;type:int;default:0" json:"hidden"`
 	Serializer    string `gorm:"column:serializer;type:string;size:50" json:"serializer"`

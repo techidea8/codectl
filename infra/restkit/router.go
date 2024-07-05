@@ -83,8 +83,19 @@ func (r *Router) Register(ptrOfModule any, alise ...string) {
 // @return err  error 错误信息
 func (r *Router) Dispatch(module, action string) (ptrmodule any, method reflect.Method, err error) {
 	r.avaiablehandlerlocker.Lock()
-	method, ok := r.avaiablehandler[module][action]
-	r.avaiablehandlerlocker.Unlock()
+	defer r.avaiablehandlerlocker.Unlock()
+	_m := r.avaiablehandler[module]
+
+	if _m == nil {
+		err = fmt.Errorf("当前服务不存在")
+		return
+	}
+	method, ok := _m[action]
+	if !ok {
+		err = fmt.Errorf("当前服务不存在")
+		return
+	}
+
 	if !ok {
 		err = fmt.Errorf("当前服务不存在")
 		return

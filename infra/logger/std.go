@@ -27,13 +27,13 @@ func NewStd(level LogLevel, writers ...io.Writer) *std {
 }
 
 func (l std) Debug(args ...any) {
-	if l.level > DebugLevel {
+	if TOInt[int32](l.level) > TOInt[int32](DebugLevel) {
 		return
 	}
-	l.logger.Printf("DEBUG", args...)
+	l.logger.Print(args...)
 }
 func (l std) Debugf(fmt string, args ...any) {
-	if l.level > DebugLevel {
+	if TOInt[int32](l.level) > TOInt[int32](DebugLevel) {
 		return
 	}
 	l.logger.Printf(fmt, args...)
@@ -43,27 +43,27 @@ func (l *std) SetLevel(level LogLevel) {
 	l.level = level
 }
 func (l std) Info(args ...any) {
-	if l.level > InfoLevel {
+	if TOInt[int32](l.level) > TOInt[int32](InfoLevel) {
 		return
 	}
-	l.logger.Printf("INFO", args...)
+	l.logger.Print(args...)
 }
-
-func (l std) Error(args ...any) {
-	if l.level > ErrorLevel {
-		return
-	}
-	l.logger.Printf("ERROR", args...)
-}
-
 func (l std) Infof(fmt string, args ...any) {
-	if l.level > InfoLevel {
+	if TOInt[int32](l.level) > TOInt[int32](InfoLevel) {
 		return
 	}
 	l.logger.Printf(fmt, args...)
 }
+
+func (l std) Error(args ...any) {
+	if TOInt[int32](l.level) > TOInt[int32](ErrorLevel) {
+		return
+	}
+	l.logger.Print(args...)
+}
+
 func (l std) Errorf(fmt string, args ...any) {
-	if l.level > ErrorLevel {
+	if TOInt[int32](l.level) > TOInt[int32](ErrorLevel) {
 		return
 	}
 	l.logger.Printf(fmt, args...)

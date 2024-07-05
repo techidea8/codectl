@@ -11,11 +11,12 @@ const PROD ENVDEF = "prod"
 const DEV ENVDEF = "dev"
 
 type AppConf struct {
-	DbType  string
-	Dsn     string
-	Env     ENVDEF
-	LogFile string
-	Prefix  string
+	DbType   string
+	Dsn      string
+	Env      ENVDEF
+	LogFile  string
+	LogLevel string
+	Prefix   string
 }
 
 const (

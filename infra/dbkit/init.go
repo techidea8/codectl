@@ -37,7 +37,27 @@ func TOString(l logger.LogLevel) string {
 	} else {
 		return fmt.Sprintf("%d", l)
 	}
+}
 
+// 切换loglevel
+func TOGormLogLevel(level string) (r logger.LogLevel) {
+	_level := strings.ToLower(level)
+	switch _level {
+	case "error":
+		r = logger.Error
+	case "warn":
+		r = logger.Warn
+	case "debug":
+	case "info":
+	case "trace":
+		r = logger.Info
+	case "fatal":
+	case "panic":
+		r = logger.Error
+	default:
+		r = logger.Info
+	}
+	return r
 }
 
 // gorm.Dialector
@@ -80,8 +100,12 @@ func OpenDb(dst DBTYPE, dsn string, opts ...Option) (db *gorm.DB, err error) {
 			TablePrefix:   ctx.TablePrefix,
 		},
 	})
+
 	if err != nil {
 		return nil, err
+	}
+	if ctx.Debug {
+		db = db.Debug()
 	}
 	if len(ctx.ModuleMigrates) > 0 {
 		err = db.AutoMigrate(ctx.ModuleMigrates...)

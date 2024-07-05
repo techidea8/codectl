@@ -11,13 +11,13 @@ type AppConf struct {
 	Dsn     string
 	Env     ENVDEF
 	LogFile string
-	LogLevel int32
+	LogLevel string
 }
 var DefaultAppConf *AppConf = &AppConf{
 	DbType: "sqlite",
 	Dsn:     "{{.Project.Name|lower}}.db",
 	Env:     PROD,
 	LogFile: "{{.Project.Name|lower}}.log",
-	LogLevel: 3,
+	LogLevel: "INFO",
 }
 {{end}}

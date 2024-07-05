@@ -65,7 +65,7 @@ var exportCmd = &cobra.Command{
 			loglevel = logger.ErrorLevel
 		}
 		exportdb, err := dbkit.OpenDb(dbkit.DBTYPE(prj.DbType), prj.Dsn, dbkit.WithWriter(os.Stdout),
-			dbkit.SetLogLevel(int32(loglevel)))
+			dbkit.SetLogLevel(loglevel))
 		if err != nil {
 			logger.Error(err.Error())
 			return
@@ -99,13 +99,12 @@ var exportCmd = &cobra.Command{
 	// 还有其他钩子函数
 }
 var defaultexportctrl *exportctrl = NewExportCtrl()
-var rulefile string = ""
 
 func init() {
 	rootCmd.AddCommand(exportCmd)
 	exportCmd.Flags().StringVarP(&(defaultexportctrl.table.Name), "name", "t", "", "module name of table")
 	exportCmd.Flags().StringVarP(&(defaultexportctrl.table.Title), "title", "n", "", "title of table")
 	exportCmd.Flags().StringVarP(&(defaultexportctrl.table.Module), "module", "m", "", "module of table")
-	exportCmd.Flags().StringVarP(&(rulefile), "rule", "c", "", "rule config file,like mapper.yml")
+	exportCmd.Flags().StringVarP(&(rulefile), "rule", "r", "", "rule config file,like mapper.yml")
 	exportCmd.Flags().StringArrayVarP(&defaultexportctrl.methods, "method", "f", []string{}, "method of table:search/create/update/take/download/export eg -f search -f create")
 }

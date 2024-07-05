@@ -50,10 +50,26 @@ func Json(input interface{}) *Response {
 		Status: http.StatusOK,
 	}
 }
+func Empty() *Response {
+	return &Response{
+		Code:   200,
+		Mime:   MineJson,
+		Status: http.StatusOK,
+	}
+}
 func OkData(input interface{}) *Response {
 	return &Response{
 		Data:   input,
 		Code:   200,
+		Mime:   MineJson,
+		Status: http.StatusOK,
+	}
+}
+func OkMsg(msg string) *Response {
+	return &Response{
+		Data:   nil,
+		Code:   200,
+		Msg:    msg,
 		Mime:   MineJson,
 		Status: http.StatusOK,
 	}

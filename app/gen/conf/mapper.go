@@ -19,11 +19,11 @@ mysql-golang:
   FLOAT: float32
   DOUBLE: float64
   DECIMAL: float32
-  DATE: time.Time
-  TIME: time.Time
-  YEAR: time.Time
-  DATETIME: time.Time
-  TIMESTAMP: time.Time
+  DATE: types.Date
+  TIME: types.DateTime
+  YEAR: types.Date
+  DATETIME: types.Date
+  TIMESTAMP: types.Date
   CHAR: string
   VARCHAR: string
   TINYTEXT: string
