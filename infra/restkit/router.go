@@ -2,6 +2,7 @@ package restkit
 
 import (
 	"fmt"
+	"path"
 	"reflect"
 	"sync"
 
@@ -10,11 +11,13 @@ import (
 )
 
 type Router struct {
-	logger                logger.ILogger
-	avaiablehandlerlocker *sync.RWMutex
-	avaiablehandler       map[string]map[string]reflect.Method
-	avaiablemodulelocker  *sync.RWMutex
-	avaiablemodule        map[string]any
+	logger                   logger.ILogger
+	avaiablehandlerlocker    *sync.RWMutex
+	avaiablehandler          map[string]map[string]reflect.Method
+	avaiablemodulelocker     *sync.RWMutex
+	avaiablemodule           map[string]any
+	avaiablehanderfunclocker *sync.RWMutex
+	avaiablehanderfunc       map[string]HandlerFunc
 }
 
 var DefaultRouter *Router = NewRouter()
@@ -29,13 +32,26 @@ var DefaultRouter *Router = NewRouter()
 func Register(ptrOfModule any, alise ...string) {
 	DefaultRouter.Register(ptrOfModule, alise...)
 }
+
+// 注册路由函数,构建url到直接handlerfunc的映射
+//
+// uri: 路由格式
+//
+// handl...: 模型名称.如果没有填写,则以结构体名字为基础
+//
+// eg: RegisterHandlerFunc("/module1/action",&ctrl{}.Create)
+func RegisterHandlerFunc(uri string, handlerfunc HandlerFunc) (err error) {
+	return DefaultRouter.HandlerFunc(uri, handlerfunc)
+}
 func NewRouter() *Router {
 	return &Router{
-		logger:                logger.DefaultLogger,
-		avaiablehandlerlocker: &sync.RWMutex{},
-		avaiablehandler:       make(map[string]map[string]reflect.Method, 0),
-		avaiablemodulelocker:  &sync.RWMutex{},
-		avaiablemodule:        map[string]any{},
+		logger:                   logger.DefaultLogger,
+		avaiablehandlerlocker:    &sync.RWMutex{},
+		avaiablehandler:          make(map[string]map[string]reflect.Method, 0),
+		avaiablemodulelocker:     &sync.RWMutex{},
+		avaiablemodule:           map[string]any{},
+		avaiablehanderfunc:       map[string]HandlerFunc{},
+		avaiablehanderfunclocker: &sync.RWMutex{},
 	}
 }
 
@@ -104,4 +120,23 @@ func (r *Router) Dispatch(module, action string) (ptrmodule any, method reflect.
 	ptrmodule = r.avaiablemodule[module]
 	r.avaiablemodulelocker.Unlock()
 	return ptrmodule, method, nil
+}
+
+// 直接注册handerl func
+func (r *Router) HandlerFunc(uri string, handler HandlerFunc) (err error) {
+	r.avaiablehanderfunclocker.Lock()
+	defer r.avaiablehanderfunclocker.Unlock()
+	r.avaiablehanderfunc[path.Clean(uri)] = handler
+	return
+}
+
+// 直接获得router
+func (r *Router) FindHandlerFunc(uri string) (handler HandlerFunc, err error) {
+	r.avaiablehanderfunclocker.Lock()
+	defer r.avaiablehanderfunclocker.Unlock()
+	handler = r.avaiablehanderfunc[path.Clean(uri)]
+	if handler == nil {
+		err = fmt.Errorf("当前服务不存在")
+	}
+	return
 }
