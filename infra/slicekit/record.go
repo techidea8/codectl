@@ -1,4 +1,6 @@
-package record
+package slicekit
+
+type Record[K comparable, V any] map[K]V
 
 func Keys[K comparable, V any](input map[K]V) []K {
 	result := []K{}

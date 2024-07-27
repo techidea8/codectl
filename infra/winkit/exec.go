@@ -1,4 +1,4 @@
-package wintool
+package winkit
 
 import (
 	"bufio"

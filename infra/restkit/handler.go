@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"github.com/techidea8/codectl/infra/logger"
-	"github.com/techidea8/codectl/infra/utils/stringx"
+	"github.com/techidea8/codectl/infra/stringx"
 	"github.com/techidea8/codectl/infra/wraper"
 )
 

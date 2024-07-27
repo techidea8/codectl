@@ -15,8 +15,8 @@ import (
 	"github.com/techidea8/codectl/infra/filekit"
 	"github.com/techidea8/codectl/infra/logger"
 	"github.com/techidea8/codectl/infra/slicekit"
+	"github.com/techidea8/codectl/infra/stringx"
 	"github.com/techidea8/codectl/infra/timekit"
-	"github.com/techidea8/codectl/infra/utils/stringx"
 	"gorm.io/gorm"
 )
 

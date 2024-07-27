@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/techidea8/codectl/infra/logger"
-	"github.com/techidea8/codectl/infra/utils/stringx"
+	"github.com/techidea8/codectl/infra/stringx"
 )
 
 type Router struct {

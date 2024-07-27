@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/techidea8/codectl/infra/utils/record"
+	"github.com/techidea8/codectl/infra/slicekit"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -42,7 +42,7 @@ func (s *xlskitctrl) Render(meta []Meta, dataInput []map[string]any) (buf *bytes
 		s.file.SetCellValue(s.sheetname, cellName, title)
 	}
 	for rowIndex, dataItem := range dataInput {
-		fields := record.Keys(dataItem)
+		fields := slicekit.Keys(dataItem)
 		for colIndex, field := range fields {
 			cellName := fmt.Sprintf("%s%d", charfileds[colIndex], rowIndex+1)
 			value := dataItem[field]
