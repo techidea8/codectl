@@ -28,10 +28,40 @@ type Route struct {
 	Comment string
 }
 
+func (p *Route) Println() {
+	fmt.Printf("moduel=%s,func=%s,path=%s,method=%s,comment=%s\n", p.Module, p.Func, p.Path, p.Method, p.Comment)
+}
+
 var regmdule *regexp.Regexp = regexp.MustCompile(`.*\/\/\s+router\s+(\S+)`)
-var regrouterrule *regexp.Regexp = regexp.MustCompile(`.*\/\/\s+([post|get|put|delete|options\,]+)\s+(\S+)`)
-var regstruct *regexp.Regexp = regexp.MustCompile(`.*type\s+(\S+)\s+struct\{\}`)
-var regfunc *regexp.Regexp = regexp.MustCompile(`.*func\s*\(\s*\w*\s*\*\s*(\w+)\s*\)\s*([\w]+)\s*\(\s*\S+\s*http\.ResponseWriter\s*\,\s*\S+\s*\*http\.Request\s*\).*`)
+var regrouterrule *regexp.Regexp = regexp.MustCompile(`.*\/\/\s+([post|get|put|delete|options]{1}(\,post|get|put|delete|options)?)\s+(\/[\w\/]+)`)
+var regstruct *regexp.Regexp = regexp.MustCompile(`.*type\s+(\S+)\s+struct\{.*\}`)
+
+/*`
+// router acc
+// 声明结构体
+type Acc struct{}
+
+// 注册业务逻辑
+func init() {
+	restkit.Register(&Acc{})
+}
+
+// post /acc/create
+// 创建账号
+func (ctrl *Acc) Create(ctx restkit.Context) (r *wraper.Response, err error) {
+	instance := &model.Acc{}
+	err = ctx.Bind(instance)
+	if err != nil {
+		return wraper.Error(err), err
+	}
+	instance, err = logic.Create(instance)
+	return wraper.OkData(instance).WithMsg("账号创建成功"), err
+}
+
+`
+*/
+// var regfunc *regexp.Regexp = regexp.MustCompile(`.*func\s*\(\s*\w*\s*\*\s*(\w+)\s*\)\s*([\w]+)\s*\(\s*\S+\s*http\.ResponseWriter\s*\,\s*\S+\s*\*http\.Request\s*\).*`)
+var regfunc *regexp.Regexp = regexp.MustCompile(`.*func\s*\(\s*\w*\s*\*\s*(\w+)\s*\)\s*(\w+)\s*\(\s*\S+\s*\).*`)
 var regcomment *regexp.Regexp = regexp.MustCompile(`.*\/\/\s*(.*).*`)
 
 // 下划线单词转为小写驼峰单词
@@ -64,7 +94,7 @@ func buildroutes(dirsrc string) (routes []*Route, err error) {
 	routes = make([]*Route, 0)
 	err = filepath.WalkDir(dirsrc, func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
-			return nil
+			return err
 		}
 		bts, err := os.ReadFile(path)
 		if err != nil {
@@ -86,6 +116,7 @@ func buildroutes(dirsrc string) (routes []*Route, err error) {
 				structs := regstruct.FindStringSubmatch(txt)
 				proute.Module = structs[1]
 				routes = append(routes, proute)
+				proute.Println()
 				proute = nil
 			} else if regrouterrule.MatchString(txt) {
 				// 方法
@@ -98,7 +129,9 @@ func buildroutes(dirsrc string) (routes []*Route, err error) {
 				proute.Module = result[1]
 				proute.Func = result[2]
 				routes = append(routes, proute)
+				proute.Println()
 				proute = nil
+
 			} else if regcomment.MatchString(txt) {
 				if proute != nil {
 					proute.Comment = regcomment.FindStringSubmatch(txt)[1]
@@ -236,11 +269,14 @@ func gen(dirsrc string, dirdst string) error {
 }
 
 // 子命令定义 运行方法 go run main.go version 编译后 ./hugo version
-var genCmd = &cobra.Command{
+var routerCmd = &cobra.Command{
 	Use:   "router", // Use这里定义的就是命令的名称
 	Short: "通过注解生成路由",
 	Long:  `generate route by annotation`,
 	Run: func(cmd *cobra.Command, args []string) { //这里是命令的执行方法
+		if dirsrc != "" && dirdst == "" {
+			dirdst = dirsrc
+		}
 		//扫描目录下的每一个文件
 		if err := gen(dirsrc, dirdst); err != nil {
 			fmt.Println("gen route ❎", err.Error())
@@ -258,6 +294,7 @@ var genCmd = &cobra.Command{
 }
 
 func init() {
-	genCmd.Flags().StringVarP(&dirsrc, "src", "s", "", "源目录")
-	genCmd.Flags().StringVarP(&dirdst, "dst", "d", "", "目标目录")
+	rootCmd.AddCommand(routerCmd)
+	routerCmd.Flags().StringVarP(&dirsrc, "src", "s", "", "源目录")
+	routerCmd.Flags().StringVarP(&dirdst, "dst", "d", "", "目标目录")
 }

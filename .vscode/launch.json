@@ -18,7 +18,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/",
-            "args": ["router","--source","E:\\workspace\\devfast\\server\\api\\rest\\sys\\handler"]
+            "args": ["router","-s","E:\\workspace\\devfast\\server\\api\\rest\\sys\\handler"]
         }
     ]
 }
