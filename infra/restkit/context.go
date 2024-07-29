@@ -33,6 +33,13 @@ type (
 	}
 )
 
+func NewContext(w http.ResponseWriter, r *http.Request) *context {
+	return &context{
+		writer:  w,
+		request: r,
+	}
+}
+
 // 获得request
 func (c *context) Request() *http.Request {
 	return c.request

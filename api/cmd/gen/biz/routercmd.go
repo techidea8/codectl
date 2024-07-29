@@ -15,6 +15,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/techidea8/codectl/infra/slicekit"
+	"github.com/techidea8/codectl/infra/stringx"
 )
 
 var dirsrc string = ""
@@ -32,36 +33,12 @@ func (p *Route) Println() {
 	fmt.Printf("moduel=%s,func=%s,path=%s,method=%s,comment=%s\n", p.Module, p.Func, p.Path, p.Method, p.Comment)
 }
 
-var regmdule *regexp.Regexp = regexp.MustCompile(`.*\/\/\s+router\s+(\S+)`)
-var regrouterrule *regexp.Regexp = regexp.MustCompile(`.*\/\/\s+([post|get|put|delete|options]{1}(\,post|get|put|delete|options)?)\s+(\/[\w\/]+)`)
-var regstruct *regexp.Regexp = regexp.MustCompile(`.*type\s+(\S+)\s+struct\{.*\}`)
+var rulemodule *regexp.Regexp = regexp.MustCompile(`\s*//\s+router\s+(\S+)`)
+var rulepath *regexp.Regexp = regexp.MustCompile(`\s*//\s+((?:\,?(?:post|get|put|delete|options))+)\s+((?:/\w+)+)`)
+var rulestruct *regexp.Regexp = regexp.MustCompile(`\s*type\s+(\S+)\s+struct\{.*\}`)
 
-/*`
-// router acc
-// 声明结构体
-type Acc struct{}
-
-// 注册业务逻辑
-func init() {
-	restkit.Register(&Acc{})
-}
-
-// post /acc/create
-// 创建账号
-func (ctrl *Acc) Create(ctx restkit.Context) (r *wraper.Response, err error) {
-	instance := &model.Acc{}
-	err = ctx.Bind(instance)
-	if err != nil {
-		return wraper.Error(err), err
-	}
-	instance, err = logic.Create(instance)
-	return wraper.OkData(instance).WithMsg("账号创建成功"), err
-}
-
-`
-*/
 // var regfunc *regexp.Regexp = regexp.MustCompile(`.*func\s*\(\s*\w*\s*\*\s*(\w+)\s*\)\s*([\w]+)\s*\(\s*\S+\s*http\.ResponseWriter\s*\,\s*\S+\s*\*http\.Request\s*\).*`)
-var regfunc *regexp.Regexp = regexp.MustCompile(`.*func\s*\(\s*\w*\s*\*\s*(\w+)\s*\)\s*(\w+)\s*\(\s*\S+\s*\).*`)
+var rulefunc *regexp.Regexp = regexp.MustCompile(`\s*func\s+\(\s*\w+\s+\*([A-Z]+\w+)\s*\)\s+([A-Z]+\w+)\s*\(.*`)
 var regcomment *regexp.Regexp = regexp.MustCompile(`.*\/\/\s*(.*).*`)
 
 // 下划线单词转为小写驼峰单词
@@ -103,39 +80,51 @@ func buildroutes(dirsrc string) (routes []*Route, err error) {
 
 		scanner := bufio.NewScanner(bytes.NewReader(bts))
 		var proute *Route = nil
+		var latestcomment string = ""
 		for scanner.Scan() {
 			txt := scanner.Text()
-			if regmdule.MatchString(txt) {
+			if rulemodule.MatchString(txt) {
 				// 模块
-				module := regmdule.FindStringSubmatch(txt)
+				// router /acc
+				module := rulemodule.FindStringSubmatch(txt)
 				proute = &Route{}
 				proute.Path = module[1]
 
-			} else if regstruct.MatchString(txt) {
+			} else if rulestruct.MatchString(txt) {
 				// 结构体
-				structs := regstruct.FindStringSubmatch(txt)
+				//
+				structs := rulestruct.FindStringSubmatch(txt)
+				if proute == nil {
+					proute = &Route{}
+					proute.Path = "/" + stringx.UnderlineToCamelCase(structs[1])
+				}
 				proute.Module = structs[1]
+				proute.Comment = latestcomment
 				routes = append(routes, proute)
 				proute.Println()
 				proute = nil
-			} else if regrouterrule.MatchString(txt) {
+			} else if rulepath.MatchString(txt) {
 				// 方法
-				method := regrouterrule.FindStringSubmatch(txt)
+				method := rulepath.FindStringSubmatch(txt)
 				proute = &Route{}
 				proute.Method = strings.Split(method[1], ",")
 				proute.Path = method[2]
-			} else if regfunc.MatchString(txt) {
-				result := regfunc.FindStringSubmatch(txt)
+			} else if rulefunc.MatchString(txt) {
+				result := rulefunc.FindStringSubmatch(txt)
+				if proute == nil {
+					proute = &Route{}
+					proute.Method = []string{"post"}
+					proute.Path = stringx.UnderlineToCamelCase("/" + stringx.CamelLcFirst(result[2]))
+				}
 				proute.Module = result[1]
 				proute.Func = result[2]
+				proute.Comment = latestcomment
 				routes = append(routes, proute)
 				proute.Println()
 				proute = nil
 
 			} else if regcomment.MatchString(txt) {
-				if proute != nil {
-					proute.Comment = regcomment.FindStringSubmatch(txt)[1]
-				}
+				latestcomment = regcomment.FindStringSubmatch(txt)[1]
 			}
 		}
 		return err

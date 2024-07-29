@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-var rule1 *regexp.Regexp = regexp.MustCompile(`//\s+(post|get|put|delete|options\S*)\s+([\/\w]+)`)
+var rule1 *regexp.Regexp = regexp.MustCompile(`//\s+((?:\,?(?:post|get|put|delete|options))+)\s+((?:/\w+)+)`)
 var regmap map[string]*regexp.Regexp = map[string]*regexp.Regexp{
 	"// post /acc/create": rule1,
 	"// gen by codectl ,donot modify ,https://github.com/techidea8/codectl.git": rule1,
@@ -33,4 +33,18 @@ func Test02(t *testing.T) {
 	patern := regexp.MustCompile(`//\s+(post|get|put[\,post|\,get|\,put]*)\s+[\/\w]+`)
 	result := patern.FindStringSubmatch(str1)
 	fmt.Println(str1, len(result), result)
+}
+
+func Test03(t *testing.T) {
+	pt := regexp.MustCompile(`//\s+((?:post|get|put)\S*)\s+((?:/?\w+)+)`)
+	arr := []string{
+		"// post,get,put /a/b",
+		"// post,get /c/d",
+		"// post /e/f",
+		"// get /h/j",
+	}
+	for _, v := range arr {
+		aa := pt.FindStringSubmatch(v)
+		fmt.Println(v, aa)
+	}
 }
