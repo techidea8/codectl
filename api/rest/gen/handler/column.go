@@ -10,10 +10,6 @@ import (
 
 type column struct{}
 
-func init() {
-	restkit.Register(&column{})
-}
-
 // 创建字段
 func (prj *column) Create(ctx restkit.Context) (r *wraper.Response, err error) {
 	instance := &model.Column{}

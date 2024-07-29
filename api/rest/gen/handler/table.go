@@ -19,10 +19,6 @@ import (
 
 type table struct{}
 
-func init() {
-	restkit.Register(&table{})
-}
-
 // 导出代码，生成zip文件
 func (ctrl *table) Export(ctx restkit.Context) (r *wraper.Response, err error) {
 	param := &vo.ExportVo{}

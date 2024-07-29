@@ -144,23 +144,21 @@ func score(path string) int {
 }
 
 var tplrouter string = `
-//dot modify !gen by  go run api/cmd/router/ -d api/rest/sys/handler -s  api/rest/sys/handler
-//dot modify ! gen by  go run api/cmd/router/ -d api/rest/sys/handler -s  api/rest/sys/handler
 //dot modify ! gen by  go run api/cmd/router/ -d api/rest/sys/handler -s  api/rest/sys/handler
 package ${package}
 
 import (
-	"github.com/gorilla/mux"
+	"github.com/techidea8/codectl/infra/restkit"
 )
 
-var router *mux.Router = mux.NewRouter()
+var router *restkit.Router = restkit.NewRouter().PathPrefix("/")
 // 初始化路由
-func InitRouter(router *mux.Router) {
+func InitRouter(router *restkit.Router) {
 	{{- range $k,$v := . }}
 	{{$module := $v.Node.Module|camel}}
 	// {{$v.Node.Comment}}
 	{{$module}}Ctrl := &{{$v.Node.Module}}{}
-	{{$module}}router := router.PathPrefix("{{$v.Node.Path}}").Subrouter()
+	{{$module}}router := router.Subrouter().PathPrefix("{{$v.Node.Path}}")
 	{{- range $g,$h := $v.Children }}
 	//{{$h.Comment}}
 	{{$module}}router.HandleFunc("{{$h.Path}}", {{$module}}Ctrl.{{$h.Func}}).Methods({{range $h.Method}}"{{.}}",{{end}})

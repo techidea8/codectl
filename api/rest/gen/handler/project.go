@@ -10,10 +10,6 @@ import (
 
 type Project struct{}
 
-func init() {
-	restkit.Register(&Project{})
-}
-
 // 创建项目
 func (prj *Project) Create(ctx restkit.Context) (r *wraper.Response, err error) {
 	instance := &model.Project{}
