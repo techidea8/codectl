@@ -1,4 +1,4 @@
-package winkit
+package oskit
 
 import (
 	"fmt"

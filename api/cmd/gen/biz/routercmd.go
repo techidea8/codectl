@@ -20,6 +20,7 @@ import (
 
 var dirsrc string = ""
 var dirdst string = ""
+var routerfile string = "router.go"
 
 type Route struct {
 	Module  string
@@ -70,6 +71,8 @@ func camel(s string) string {
 	ret := string(data[:])
 	return strings.ToLower(ret[:1]) + ret[1:]
 }
+
+// 解析所有文件,构建信息结构体
 func buildroutes(dirsrc string) (routes []*Route, err error) {
 	routes = make([]*Route, 0)
 	err = filepath.WalkDir(dirsrc, func(path string, d fs.DirEntry, err error) error {
@@ -135,6 +138,8 @@ func buildroutes(dirsrc string) (routes []*Route, err error) {
 
 	return
 }
+
+// 为路径打分,mark priay for rule
 func score(path string) int {
 	var scorechar string = "{:"
 	var ret int = 0
@@ -174,6 +179,7 @@ func init() {
 }
 `
 
+// replace keyword to ruled str
 func replace(input string, rule map[string]string) string {
 	for k, v := range rule {
 		input = strings.ReplaceAll(input, k, v)
@@ -232,7 +238,7 @@ func gencode(dirdst string, routes []*Route) (err error) {
 	if err != nil {
 		return err
 	}
-	dstfilename := path.Join(dirdst, "router.go")
+	dstfilename := path.Join(dirdst, routerfile)
 	_, err = os.Stat(dstfilename)
 	// 如果文件不存在,则创建
 	if err == nil || os.IsNotExist(err) {
@@ -261,7 +267,7 @@ func gen(dirsrc string, dirdst string) error {
 // 子命令定义 运行方法 go run main.go version 编译后 ./hugo version
 var routerCmd = &cobra.Command{
 	Use:   "router", // Use这里定义的就是命令的名称
-	Short: "通过注解生成路由",
+	Short: "generate route by annotation",
 	Long:  `generate route by annotation`,
 	Run: func(cmd *cobra.Command, args []string) { //这里是命令的执行方法
 		if dirsrc != "" && dirdst == "" {
@@ -269,9 +275,9 @@ var routerCmd = &cobra.Command{
 		}
 		//扫描目录下的每一个文件
 		if err := gen(dirsrc, dirdst); err != nil {
-			fmt.Println("gen route ❎", err.Error())
+			fmt.Println("gen route ", filepath.Join(dirsrc), "->", filepath.Join(dirdst, routerfile), "❎", err.Error())
 		} else {
-			fmt.Println("gen route ✅")
+			fmt.Println("gen route ", filepath.Join(dirsrc), "->", filepath.Join(dirdst, routerfile), "✅")
 		}
 	},
 	PreRun: func(cmd *cobra.Command, args []string) {
@@ -285,6 +291,7 @@ var routerCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(routerCmd)
-	routerCmd.Flags().StringVarP(&dirsrc, "src", "s", "", "源目录")
-	routerCmd.Flags().StringVarP(&dirdst, "dst", "d", "", "目标目录")
+	routerCmd.Flags().StringVarP(&dirsrc, "src", "s", "", "dir of source")
+	routerCmd.Flags().StringVarP(&dirdst, "dst", "d", "", "dir for save")
+	routerCmd.Flags().StringVarP(&routerfile, "name", "n", "router.go", "name of router file")
 }
