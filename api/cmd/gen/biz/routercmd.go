@@ -33,8 +33,11 @@ func (p *Route) Println() {
 	fmt.Printf("moduel=%s,func=%s,path=%s,method=%s,comment=%s\n", p.Module, p.Func, p.Path, p.Method, p.Comment)
 }
 
+// router /abc
 var rulemodule *regexp.Regexp = regexp.MustCompile(`\s*//\s+router\s+(\S+)`)
-var rulepath *regexp.Regexp = regexp.MustCompile(`\s*//\s+((?:\,?(?:post|get|put|delete|options))+)\s+((?:/\w+)+)`)
+
+// post,get /abc/edf/{ghi}
+var rulepath *regexp.Regexp = regexp.MustCompile(`\s*//\s+((?:\,?(?:post|get|put|delete|options))+)\s+((?:/[\w\{\}]+)+)`)
 var rulestruct *regexp.Regexp = regexp.MustCompile(`\s*type\s+(\S+)\s+struct\{.*\}`)
 
 // var regfunc *regexp.Regexp = regexp.MustCompile(`.*func\s*\(\s*\w*\s*\*\s*(\w+)\s*\)\s*([\w]+)\s*\(\s*\S+\s*http\.ResponseWriter\s*\,\s*\S+\s*\*http\.Request\s*\).*`)

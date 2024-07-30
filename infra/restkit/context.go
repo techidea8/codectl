@@ -2,6 +2,7 @@ package restkit
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/techidea8/codectl/infra/restkit/validatekit"
@@ -21,6 +22,8 @@ type (
 
 		SetWriter(w http.ResponseWriter)
 
+		Params() *url.Values
+
 		// Bind binds the request body into provided type `i`. The default binder
 		// does it based on Content-Type header.
 		Bind(ptr interface{}) error
@@ -30,6 +33,7 @@ type (
 	context struct {
 		request *http.Request
 		writer  http.ResponseWriter
+		params  *url.Values
 	}
 )
 
@@ -37,12 +41,23 @@ func NewContext(w http.ResponseWriter, r *http.Request) *context {
 	return &context{
 		writer:  w,
 		request: r,
+		params:  &url.Values{},
 	}
 }
 
 // 获得request
 func (c *context) Request() *http.Request {
 	return c.request
+}
+
+// 获得param
+func (c *context) Params() *url.Values {
+	return c.params
+}
+
+// 获得param
+func (c *context) AddParam(key, val string) {
+	c.params.Add(key, val)
 }
 
 // 设置request
