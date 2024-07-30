@@ -115,10 +115,17 @@ func (s *TrayService) Icon(appIcon []byte) *TrayService {
 	return s
 }
 func (s *TrayService) run() {
-	systray.SetTooltip(s.tooltip)
 	systray.Run(func() {
 		s.onReady()
-		systray.SetIcon(s.icon)
+		if s.tooltip != "" {
+			systray.SetTooltip(s.tooltip)
+		}
+		if s.title != "" {
+			systray.SetTitle(s.title)
+		}
+		if len(s.icon) > 0 {
+			systray.SetIcon(s.icon)
+		}
 		for i := range s.menus {
 			item := s.menus[i]
 			menu := systray.AddMenuItem(item.title, item.tooltip)
