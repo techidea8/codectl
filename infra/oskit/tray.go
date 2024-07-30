@@ -12,6 +12,8 @@ var appIcon []byte
 
 type TrayService struct {
 	icon    []byte
+	tooltip string
+	title   string
 	onReady func()
 	onExit  func()
 	menus   []*MenuItem
@@ -66,6 +68,8 @@ func NewTrayService(options ...Option) *TrayService {
 	result := &TrayService{
 		onReady: func() {},
 		icon:    appIcon,
+		tooltip: "",
+		title:   "",
 		menus:   make([]*MenuItem, 0),
 		onExit:  func() {},
 		logger:  logger.DefaultLogger,
@@ -88,6 +92,14 @@ func (s *TrayService) Logger(logger logger.ILogger) (r *TrayService) {
 	s.logger = logger
 	return s
 }
+func (s *TrayService) Tooltip(tool string) (r *TrayService) {
+	s.tooltip = tool
+	return s
+}
+func (s *TrayService) Title(title string) (r *TrayService) {
+	s.title = title
+	return s
+}
 
 // 托盘程序
 func (s *TrayService) OnReady(on func()) *TrayService {
@@ -103,6 +115,7 @@ func (s *TrayService) Icon(appIcon []byte) *TrayService {
 	return s
 }
 func (s *TrayService) run() {
+	systray.SetTooltip(s.tooltip)
 	systray.Run(func() {
 		s.onReady()
 		systray.SetIcon(s.icon)

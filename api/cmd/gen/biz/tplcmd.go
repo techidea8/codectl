@@ -18,7 +18,7 @@ import (
 	"github.com/techidea8/codectl/app/gen/model"
 	"github.com/techidea8/codectl/infra/filekit"
 	"github.com/techidea8/codectl/infra/logger"
-	"github.com/techidea8/codectl/infra/winkit"
+	"github.com/techidea8/codectl/infra/oskit"
 )
 
 type tplctrl struct {
@@ -142,7 +142,7 @@ func (s *tplctrl) clone(args []string) error {
 }
 func (s *tplctrl) git(args []string) (resultch, errorch, stopch chan string) {
 	ctx := context.Background()
-	return winkit.ExecWithChanel(ctx, "git", args)
+	return oskit.ExecWithChanel(ctx, "git", args)
 }
 func NewtplCtl() *tplctrl {
 	return &tplctrl{
