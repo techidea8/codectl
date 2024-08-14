@@ -10,7 +10,8 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/",
-            "args": ["reverse","-c","app.yml","-d","./"]
+            "args": ["reverse","-c","app.yml","-d","./"],
+            "console": "integratedTerminal"
         },
         {
             "name": "DevRouter",
@@ -18,7 +19,8 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/",
-            "args": ["router","-s","C:\\workspace\\devfast\\server\\api\\rest\\sys\\handler"]
+            "args": ["router","-s","C:\\workspace\\devfast\\server\\api\\rest\\sys\\handler"],
+            "console": "integratedTerminal"
         }
     ]
 }

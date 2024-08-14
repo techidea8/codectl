@@ -5,7 +5,10 @@ go 1.20
 require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.62.218
 	github.com/coocood/freecache v1.2.4
+	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/digitalocean/go-smbios v0.0.0-20180907143718-390a4f403a8e
+	github.com/duke-git/lancet/v2 v2.3.2
 	github.com/getlantern/systray v1.2.2
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/google/uuid v1.6.0
@@ -17,8 +20,10 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/techidea8/restgo v1.0.5
 	github.com/wenlng/go-captcha v1.2.5
+	github.com/xinjiayu/LicenseManager v1.0.2
 	github.com/xuri/excelize/v2 v2.8.1
 	golang.org/x/crypto v0.24.0
+	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	golang.org/x/sys v0.21.0
 	gorm.io/driver/mysql v1.5.6
 	gorm.io/driver/postgres v1.4.5
@@ -75,16 +80,17 @@ require (
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
+	github.com/super-l/machine-code v0.0.0-20240104080917-14388119a8dd // indirect
 	github.com/xuri/efp v0.0.0-20231025114914-d1ff6096ae53 // indirect
 	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
-	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/image v0.14.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
