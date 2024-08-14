@@ -3,6 +3,7 @@ package biz
 import (
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"regexp"
 	"testing"
 )
@@ -47,4 +48,25 @@ func Test03(t *testing.T) {
 		aa := pt.FindStringSubmatch(v)
 		fmt.Println(v, aa)
 	}
+}
+
+func Test004(t *testing.T) {
+	dst := "."
+	t2, _ := filepath.Abs(dst)
+	fmt.Println(filepath.Base(t2))
+
+}
+
+func Test005(t *testing.T) {
+	dst := "./api/test/0034/"
+	t2, _ := filepath.Abs(dst)
+	fmt.Println(filepath.Base(t2))
+
+}
+
+func Test006(t *testing.T) {
+	dst := "../api/test/0034"
+	t2, _ := filepath.Abs(dst)
+	fmt.Println(filepath.Base(t2))
+
 }

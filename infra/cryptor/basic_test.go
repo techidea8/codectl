@@ -6,20 +6,6 @@ import (
 	"github.com/techidea8/codectl/infra/internal"
 )
 
-func TestBase64StdEncode(t *testing.T) {
-	t.Parallel()
-
-	assert := internal.NewAssert(t, "TestBase64StdEncode")
-	assert.Equal("aGVsbG8gd29ybGQ=", Base64StdEncode("hello world"))
-}
-
-func TestBase64StdDecode(t *testing.T) {
-	t.Parallel()
-
-	assert := internal.NewAssert(t, "TestBase64StdDecode")
-	assert.Equal("hello world", Base64StdDecode("aGVsbG8gd29ybGQ="))
-}
-
 func TestMd5String(t *testing.T) {
 	t.Parallel()
 

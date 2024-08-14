@@ -177,7 +177,7 @@ import (
 	"github.com/techidea8/codectl/infra/restkit"
 )
 
-var router *restkit.Router = restkit.NewRouter().PathPrefix("/")
+var DefaultRouter *restkit.Router = restkit.NewRouter().PathPrefix("/")
 // 初始化路由
 func InitRouter(router *restkit.Router) {
 	{{- range $k,$v := . }}
@@ -193,7 +193,7 @@ func InitRouter(router *restkit.Router) {
 	{{end}}
 }
 func init() {
-	InitRouter(router)
+	InitRouter(DefaultRouter)
 }
 `
 
@@ -239,7 +239,7 @@ func gencode(dirdst string, routes []*Route) (err error) {
 			return score1 > score2
 		})
 	}
-
+	dirdst, _ = filepath.Abs(dirdst)
 	pkg := filepath.Base(dirdst)
 	datatime := time.Now().Format("2006-01-02 15:04:05")
 	tpl, err := template.New("root").Funcs(template.FuncMap{"join": func(str []string) string {
