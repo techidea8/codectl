@@ -25,11 +25,7 @@ const (
 	SymbolChars     = "!@#$%^&*()_+-=[]{}|;':\",./<>?"
 )
 
-var rn = rand.NewSource(time.Now().UnixNano())
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
+var rnticker = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 // RandInt generate random int between [min, max).
 // Play: https://go.dev/play/p/pXyyAAI5YxD
@@ -41,8 +37,7 @@ func RandInt(min, max int) int {
 	if max < min {
 		min, max = max, min
 	}
-
-	return rand.Intn(max-min) + min
+	return rnticker.Intn(max-min) + min
 }
 
 // RandFloat generate random float64 number between [min, max) with specific precision.
@@ -56,7 +51,7 @@ func RandFloat(min, max float64, precision int) float64 {
 		min, max = max, min
 	}
 
-	n := rand.Float64()*(max-min) + min
+	n := rnticker.Float64()*(max-min) + min
 
 	return mathutil.RoundToFloat(n, precision)
 }
@@ -151,10 +146,10 @@ func random(s string, length int) string {
 	// 可用次数的最大值
 	letterIdMax := 63 / letterIdBits
 	// 循环生成随机字符串
-	for i, cache, remain := length-1, rn.Int63(), letterIdMax; i >= 0; {
+	for i, cache, remain := length-1, rnticker.Int63(), letterIdMax; i >= 0; {
 		// 检查随机数生成器是否用尽所有随机数
 		if remain == 0 {
-			cache, remain = rn.Int63(), letterIdMax
+			cache, remain = rnticker.Int63(), letterIdMax
 		}
 		// 从可用字符的字符串中随机选择一个字符
 		if idx := int(cache & letterIdMask); idx < strLength {

@@ -21,15 +21,14 @@ import (
 
 // Base64StdEncode encode string with base64 encoding.
 // Play: https://go.dev/play/p/VOaUyQUreoK
-func Base64StdEncode(s string) string {
-	return base64.StdEncoding.EncodeToString([]byte(s))
+func Base64StdEncode(s []byte) string {
+	return base64.StdEncoding.EncodeToString(s)
 }
 
 // Base64StdDecode decode a base64 encoded string.
 // Play: https://go.dev/play/p/RWQylnJVgIe
-func Base64StdDecode(s string) string {
-	b, _ := base64.StdEncoding.DecodeString(s)
-	return string(b)
+func Base64StdDecode(s string) (r []byte, err error) {
+	return base64.StdEncoding.DecodeString(s)
 }
 
 // Md5String return the md5 value of string.
