@@ -20,7 +20,7 @@ type LicenseCtrl struct {
 
 func NewLicenseCtrl(appName string) *LicenseCtrl {
 	return &LicenseCtrl{
-		file: "app.license",
+		file: "LICENSE",
 		key:  cryptor.Md5String(_key + appName),
 	}
 }
