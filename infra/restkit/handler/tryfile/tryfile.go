@@ -11,8 +11,9 @@ import (
 )
 
 // Tryfile 实现了 http.Handler 接口，所以可以用来处理 HTTP 请求
-// 其中 staticPath 用于定义前端静态资源目录（包含js、css 文件）
-// indexPath 用于定义入口视图模板文件，通常是 index.html
+// 其中 root 用于定义前端静态资源目录（包含js、css 文件）
+// index 用于定义入口视图模板文件，通常是 index.html
+// ctxpath 是应用前缀
 type Tryfile struct {
 	cachefs   *CacheFs
 	index     string
@@ -71,6 +72,7 @@ func (h *Tryfile) serveEmbfsHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	_path = filepath.ToSlash(_path)
 	bts, err := h.fs.ReadFile(_path)
+
 	if err == nil {
 		http.ServeContent(w, r, _path, time.Now(), bytes.NewReader(bts))
 		return
