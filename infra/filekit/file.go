@@ -10,6 +10,9 @@ func Exists(path string) bool {
 	}
 	return true
 }
+func IsExist(path string) bool {
+	return Exists(path)
+}
 
 // 判断所给路径是否为文件夹
 func IsDir(path string) bool {

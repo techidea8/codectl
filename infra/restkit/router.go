@@ -60,6 +60,10 @@ func (h *Router) PathPrefix(prefix string) *Router {
 	h.prefix = prefix
 	return h
 }
+
+func (h *Router) NotFound(handler http.Handler) {
+	h.handleNotFound = handler.ServeHTTP
+}
 func (h *Router) HandleFunc(path string, fun HandlerFunc) *HandlerFuncX {
 	path = strings.TrimPrefix(path, "/")
 	path = "/" + path

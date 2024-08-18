@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/techidea8/codectl/infra/slicekit"
@@ -20,6 +21,7 @@ import (
 
 var dirsrc string = ""
 var dirdst string = ""
+var author string = ""
 var routerfile string = "router.go"
 
 type Route struct {
@@ -39,7 +41,11 @@ var rulemodule *regexp.Regexp = regexp.MustCompile(`\s*//\s+router\s+(\S+)`)
 
 // post,get /abc/edf/{ghi}
 var rulepath *regexp.Regexp = regexp.MustCompile(`\s*//\s+((?:\,?(?:post|get|put|delete|options))+)\s+((?:/[\w\{\}]+)+)`)
+<<<<<<< HEAD
 var rulestruct *regexp.Regexp = regexp.MustCompile(`\s*type\s+(\S+)\s+struct\{.*\}?`)
+=======
+var rulestruct *regexp.Regexp = regexp.MustCompile(`\s*type\s+(\S+)\s+struct\s*\{.*`)
+>>>>>>> 082e29b7e13a493904a53548b98d3afb6b171b17
 
 // var regfunc *regexp.Regexp = regexp.MustCompile(`.*func\s*\(\s*\w*\s*\*\s*(\w+)\s*\)\s*([\w]+)\s*\(\s*\S+\s*http\.ResponseWriter\s*\,\s*\S+\s*\*http\.Request\s*\).*`)
 var rulefunc *regexp.Regexp = regexp.MustCompile(`\s*func\s+\(\s*\w+\s+\*([A-Z]+\w+)\s*\)\s+([A-Z]+\w+)\s*\(.*`)
@@ -98,7 +104,6 @@ func buildroutes(dirsrc string) (routes []*Route, err error) {
 
 			} else if rulestruct.MatchString(txt) {
 				// 结构体
-				//
 				structs := rulestruct.FindStringSubmatch(txt)
 				if proute == nil {
 					proute = &Route{}
@@ -119,8 +124,22 @@ func buildroutes(dirsrc string) (routes []*Route, err error) {
 				result := rulefunc.FindStringSubmatch(txt)
 				if proute == nil {
 					proute = &Route{}
-					proute.Method = []string{"post"}
+					proute.Method = []string{"post", "get"}
 					proute.Path = stringx.UnderlineToCamelCase("/" + stringx.CamelLcFirst(result[2]))
+					if strings.Contains(proute.Path, "create") {
+						proute.Method = []string{"post", "put"}
+					} else if strings.Contains(proute.Path, "update") {
+						proute.Method = []string{"post", "put"}
+					} else if strings.Contains(proute.Path, "delete") {
+						proute.Method = []string{"post", "delete"}
+					} else if strings.Contains(proute.Path, "search") {
+						proute.Method = []string{"post", "get"}
+					} else if strings.Contains(proute.Path, "get") {
+						proute.Method = []string{"post", "get"}
+					} else {
+						proute.Method = []string{"post", "get"}
+					}
+
 				}
 				proute.Module = result[1]
 				proute.Func = result[2]
@@ -152,14 +171,17 @@ func score(path string) int {
 }
 
 var tplrouter string = `
-//dot modify ! gen by  go run api/cmd/router/ -d api/rest/sys/handler -s  api/rest/sys/handler
+//don't modify !!!!
+// create at ${datetime}
+// creeate by ${author}
+//go:generate  codectl router -a ${author} -s . -d . -n ${routerfile}
 package ${package}
 
 import (
 	"github.com/techidea8/codectl/infra/restkit"
 )
 
-var router *restkit.Router = restkit.NewRouter().PathPrefix("/")
+var DefaultRouter *restkit.Router = restkit.NewRouter().PathPrefix("/")
 // 初始化路由
 func InitRouter(router *restkit.Router) {
 	{{- range $k,$v := . }}
@@ -175,7 +197,7 @@ func InitRouter(router *restkit.Router) {
 	{{end}}
 }
 func init() {
-	InitRouter(router)
+	InitRouter(DefaultRouter)
 }
 `
 
@@ -221,9 +243,9 @@ func gencode(dirdst string, routes []*Route) (err error) {
 			return score1 > score2
 		})
 	}
-
+	dirdst, _ = filepath.Abs(dirdst)
 	pkg := filepath.Base(dirdst)
-
+	datatime := time.Now().Format("2006-01-02 15:04:05")
 	tpl, err := template.New("root").Funcs(template.FuncMap{"join": func(str []string) string {
 		return strings.Join(str, ",")
 	},
@@ -233,7 +255,12 @@ func gencode(dirdst string, routes []*Route) (err error) {
 		},
 		"camel": camel,
 	}).Parse(replace(tplrouter, map[string]string{
-		"${package}": pkg,
+		"${package}":    pkg,
+		"${datetime}":   datatime,
+		"${author}":     author,
+		"${dirdst}":     dirdst,
+		"${dirsrc}":     dirsrc,
+		"${routerfile}": routerfile,
 	}))
 	if err != nil {
 		return err
@@ -293,5 +320,6 @@ func init() {
 	rootCmd.AddCommand(routerCmd)
 	routerCmd.Flags().StringVarP(&dirsrc, "src", "s", "", "dir of source")
 	routerCmd.Flags().StringVarP(&dirdst, "dst", "d", "", "dir for save")
+	routerCmd.Flags().StringVarP(&author, "author", "a", "github.com/techidea8/codectl", "author of code")
 	routerCmd.Flags().StringVarP(&routerfile, "name", "n", "router.go", "name of router file")
 }
