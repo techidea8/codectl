@@ -81,8 +81,8 @@ func NewTrayService(options ...Option) *TrayService {
 	return result
 }
 
-func (s *TrayService) AddMenuItem(item *MenuItem) (r *TrayService) {
-	s.menus = append(s.menus, item)
+func (s *TrayService) AddMenuItem(item ...*MenuItem) (r *TrayService) {
+	s.menus = append(s.menus, item...)
 	return s
 }
 func (s *TrayService) Quit() {

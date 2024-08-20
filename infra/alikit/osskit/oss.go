@@ -21,16 +21,6 @@ import (
 	"time"
 )
 
-const (
-	base64Table = "123QRSTUabcdVWXYZHijKLAWDCABDstEFGuvwxyzGHIJklmnopqr234560178912"
-)
-
-var coder = base64.NewEncoding(base64Table)
-
-func base64Encode(src []byte) []byte {
-	return []byte(coder.EncodeToString(src))
-}
-
 func get_gmt_iso8601(expire_end int64) string {
 	var tokenExpire = time.Unix(expire_end, 0).UTC().Format("2006-01-02T15:04:05Z")
 	return tokenExpire

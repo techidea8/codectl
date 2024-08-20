@@ -209,9 +209,9 @@ func (h *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		} else {
 			result.Encode(w)
 		}
-		for i := len(h.postmiddleware) - 1; i >= 0; i-- {
-			_handlerfuncx = h.postmiddleware[i](_handlerfuncx)
-		}
-		_handlerfuncx(ctx)
+		// for i := len(h.postmiddleware) - 1; i >= 0; i-- {
+		// 	_handlerfuncx = h.postmiddleware[i](_handlerfuncx)
+		// }
+		// _handlerfuncx(ctx)
 	}
 }
