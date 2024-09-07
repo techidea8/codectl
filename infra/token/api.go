@@ -3,14 +3,16 @@ package token
 import (
 	"errors"
 	"net/http"
+	"strings"
 )
 
 func GenerateToken(values map[string]interface{}) (string, error) {
 	return DefaultTokenManager.GenerateToken(values)
 }
+
 // 从request 中获取头
-func GetAuthorizationFromRequest(r *http.Request) string {
-	token := r.Header.Get("Authorization")
+func GetAuthorizationFromRequest(req *http.Request) string {
+	token := req.Header.Get("Authorization")
 	token = strings.TrimPrefix(token, "Bearer ")
 	token = strings.TrimPrefix(token, " ")
 	return token
