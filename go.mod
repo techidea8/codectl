@@ -18,7 +18,6 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
-	github.com/techidea8/restgo v1.0.5
 	github.com/wenlng/go-captcha v1.2.5
 	github.com/xinjiayu/LicenseManager v1.0.2
 	github.com/xuri/excelize/v2 v2.8.1
