@@ -32,10 +32,14 @@ $upstream_response_time  请求过程中，upstream响应时间                 
 */
 func NewAccessLog(logpath string) *AccessLog {
 	file, _ := os.OpenFile(logpath, os.O_CREATE|os.O_APPEND, os.ModeAppend)
-	logger := logger.NewStd(logger.DebugLevel, file, os.Stdout)
+	logger := logger.NewStd(logger.InfoLevel, file, os.Stdout)
 	return &AccessLog{
 		logger: logger,
 	}
+}
+func (a *AccessLog) SetLevel(level logger.LogLevel) *AccessLog {
+	a.logger.SetLevel(level)
+	return a
 }
 func (a *AccessLog) Serve() restkit.MiddlewareFunc {
 	//

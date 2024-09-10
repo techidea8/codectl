@@ -40,7 +40,7 @@ func (r *ConsulRegistry) Register(service *Service) (err error) {
 	// 创建注册到consul的服务到
 	registration := new(consulapi.AgentServiceRegistration)
 	registration.Name = service.Name
-	registration.ID = registration.Name + time.Now().Format("20060102")
+	// registration.ID = registration.Name
 	registration.Port = service.Port
 	registration.Tags = service.Tags
 	registration.Address = service.Host

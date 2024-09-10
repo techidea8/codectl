@@ -25,7 +25,7 @@ require (
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	golang.org/x/sys v0.21.0
 	gorm.io/driver/mysql v1.5.6
-	gorm.io/driver/postgres v1.4.5
+	gorm.io/driver/postgres v1.5.9
 	gorm.io/driver/sqlite v1.5.6
 	gorm.io/driver/sqlserver v1.4.1
 	gorm.io/gorm v1.25.10
