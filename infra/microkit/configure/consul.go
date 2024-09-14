@@ -2,6 +2,7 @@ package configure
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -50,8 +51,10 @@ func (c *ConsulConfigure) Parse(ptr any) (err error) {
 		return err
 	}
 	runtimeConfig.Unmarshal(ptr)
+	runtimeConfig.WatchRemoteConfigOnChannel()
 	runtimeConfig.OnConfigChange(func(in fsnotify.Event) {
 		runtimeConfig.Unmarshal(ptr)
+		fmt.Println("runtimeConfig.OnConfigChange")
 	})
 	return
 }

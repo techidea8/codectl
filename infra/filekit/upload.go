@@ -16,11 +16,11 @@ import (
 )
 
 type UploadStrategy string
-type config struct {
-	localdir   string
-	mapperpath string
-	strategy   UploadStrategy
-	depth      int
+type UploadConf struct {
+	LocalDir   string
+	MapperPath string
+	Strategy   UploadStrategy
+	Depth      int
 	ext        string
 }
 
@@ -31,66 +31,67 @@ const (
 	UploadStrategyUUID = "uuid"
 )
 
-func defaultconfig(ext string) *config {
-	return &config{
-		localdir:   "/mnt/storage",
-		mapperpath: "/mnt",
-		depth:      2,
-		strategy:   UploadStrategyUUID,
+func defaultconfig(ext string) *UploadConf {
+	return &UploadConf{
+		LocalDir:   "/mnt/storage",
+		MapperPath: "/mnt",
+		Depth:      2,
+		Strategy:   UploadStrategyUUID,
 		ext:        ext,
 	}
 }
-func (c *config) build() (filepath string, netpath string) {
+func (c *UploadConf) build() (filepath string, netpath string) {
 	atomic.AddInt64(&tick, 1)
 	filename := ""
-	if c.strategy == UploadStrategyUUID {
+	if c.Strategy == UploadStrategyUUID {
 		pk := stringx.PKID()
 		arr := strings.Split(pk, "")
-		arr[c.depth] = fmt.Sprintf("%s.%s", pk, c.ext)
-		filename = path.Join(arr[:c.depth]...)
+		arr[c.Depth] = fmt.Sprintf("%s%s", pk, c.ext)
+		filename = path.Join(arr[:c.Depth+1]...)
 	} else {
 		now := time.Now()
-		filename = fmt.Sprintf("%d/%d/%d/%s%06d.%s", now.Year(), now.Month()+1, now.Day(), now.Format("20060102150405"), tick%10000, c.ext)
+		filename = fmt.Sprintf("%d/%d/%d/%s%06d%s", now.Year(), now.Month()+1, now.Day(), now.Format("20060102150405"), tick%10000, c.ext)
 	}
-	return path.Join(c.localdir, filename), path.Join(c.mapperpath, filename)
+	return path.Join(c.LocalDir, filename), path.Join(c.MapperPath, filename)
 }
 func SetLocalDir(dir string) UploadOption {
-	return func(c *config) {
-		c.localdir = dir
+	return func(c *UploadConf) {
+		c.LocalDir = dir
 	}
 }
 func SetMapperPath(path string) UploadOption {
-	return func(c *config) {
-		c.mapperpath = path
+	return func(c *UploadConf) {
+		c.MapperPath = path
 	}
 }
 
 func SetDepth(dpt int) UploadOption {
-	return func(c *config) {
-		c.depth = dpt
+	return func(c *UploadConf) {
+		c.Depth = dpt
 	}
 }
 func SetStrategy(strategy UploadStrategy) UploadOption {
-	return func(c *config) {
-		c.strategy = strategy
+	return func(c *UploadConf) {
+		c.Strategy = strategy
 	}
 }
 func UseStrategyDate() UploadOption {
-	return func(c *config) {
-		c.strategy = UploadStrategyDate
+	return func(c *UploadConf) {
+		c.Strategy = UploadStrategyDate
 	}
 }
 func UseStrategyUUID() UploadOption {
-	return func(c *config) {
-		c.strategy = UploadStrategyUUID
+	return func(c *UploadConf) {
+		c.Strategy = UploadStrategyUUID
 	}
 }
 
-type UploadOption func(*config)
+type UploadOption func(*UploadConf)
 
 // 上传文件
-func Upload(file multipart.File, header *multipart.FileHeader, opts ...UploadOption) (dstpath, filekey string, size int64, err error) {
-	ext := path.Ext(header.Filename)
+func Upload(file multipart.File, header *multipart.FileHeader, opts ...UploadOption) (dstpath, filekey, filename, ext string, size int64, err error) {
+	filename = header.Filename
+	ext = path.Ext(header.Filename)
 	c := defaultconfig(ext)
 	for _, opt := range opts {
 		opt(c)
@@ -101,10 +102,11 @@ func Upload(file multipart.File, header *multipart.FileHeader, opts ...UploadOpt
 	if err != nil {
 		return
 	}
-	dstfile, err := os.Open(dstpath)
+	dstfile, err := os.Create(dstpath)
 	if err != nil {
 		return
 	}
+	defer dstfile.Close()
 	size, err = io.Copy(dstfile, file)
 	return
 }
