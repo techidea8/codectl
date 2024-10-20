@@ -161,7 +161,8 @@ var DefaultRouter *Router = NewRouter()
 
 // 提供服务
 func (h *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	_input := req.RequestURI
+	uri := req.RequestURI
+	_input := strings.Split(uri, "?")[0]
 	hf, ok := h.pathMap.Load(_input)
 	ctx := NewContext(w, req)
 	if !ok {

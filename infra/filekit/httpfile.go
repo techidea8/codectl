@@ -21,6 +21,7 @@ type StorageConf struct {
 	LocalDir   string
 	MapperPath string
 	Strategy   StorageStrategy
+	ServerUrl  string //服务地址
 	Depth      int
 	ext        string
 }
@@ -37,6 +38,7 @@ func defaultconfig(ext string) *StorageConf {
 		LocalDir:   "/mnt/storage",
 		MapperPath: "/mnt",
 		Depth:      2,
+		ServerUrl:  "",
 		Strategy:   StorageStrategyUUID,
 		ext:        ext,
 	}
@@ -66,6 +68,11 @@ func SetMapperPath(path string) StorageOption {
 	}
 }
 
+func SetServerUrl(url string) StorageOption {
+	return func(c *StorageConf) {
+		c.ServerUrl = url
+	}
+}
 func SetDepth(dpt int) StorageOption {
 	return func(c *StorageConf) {
 		c.Depth = dpt
