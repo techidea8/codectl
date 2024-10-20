@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/fs"
 	"mime/multipart"
+	"net/http"
 	"os"
 	"path"
 	"strings"
@@ -15,11 +16,11 @@ import (
 	"github.com/techidea8/codectl/infra/stringx"
 )
 
-type UploadStrategy string
-type UploadConf struct {
+type StorageStrategy string
+type StorageConf struct {
 	LocalDir   string
 	MapperPath string
-	Strategy   UploadStrategy
+	Strategy   StorageStrategy
 	Depth      int
 	ext        string
 }
@@ -27,23 +28,23 @@ type UploadConf struct {
 var tick int64 = time.Now().Unix() % 10000
 
 const (
-	UploadStrategyDate = "date"
-	UploadStrategyUUID = "uuid"
+	StorageStrategyDate = "date"
+	StorageStrategyUUID = "uuid"
 )
 
-func defaultconfig(ext string) *UploadConf {
-	return &UploadConf{
+func defaultconfig(ext string) *StorageConf {
+	return &StorageConf{
 		LocalDir:   "/mnt/storage",
 		MapperPath: "/mnt",
 		Depth:      2,
-		Strategy:   UploadStrategyUUID,
+		Strategy:   StorageStrategyUUID,
 		ext:        ext,
 	}
 }
-func (c *UploadConf) build() (filepath string, netpath string) {
+func (c *StorageConf) build() (filepath string, netpath string) {
 	atomic.AddInt64(&tick, 1)
 	filename := ""
-	if c.Strategy == UploadStrategyUUID {
+	if c.Strategy == StorageStrategyUUID {
 		pk := stringx.PKID()
 		arr := strings.Split(pk, "")
 		arr[c.Depth] = fmt.Sprintf("%s%s", pk, c.ext)
@@ -54,42 +55,62 @@ func (c *UploadConf) build() (filepath string, netpath string) {
 	}
 	return path.Join(c.LocalDir, filename), path.Join(c.MapperPath, filename)
 }
-func SetLocalDir(dir string) UploadOption {
-	return func(c *UploadConf) {
+func SetLocalDir(dir string) StorageOption {
+	return func(c *StorageConf) {
 		c.LocalDir = dir
 	}
 }
-func SetMapperPath(path string) UploadOption {
-	return func(c *UploadConf) {
+func SetMapperPath(path string) StorageOption {
+	return func(c *StorageConf) {
 		c.MapperPath = path
 	}
 }
 
-func SetDepth(dpt int) UploadOption {
-	return func(c *UploadConf) {
+func SetDepth(dpt int) StorageOption {
+	return func(c *StorageConf) {
 		c.Depth = dpt
 	}
 }
-func SetStrategy(strategy UploadStrategy) UploadOption {
-	return func(c *UploadConf) {
+func SetStrategy(strategy StorageStrategy) StorageOption {
+	return func(c *StorageConf) {
 		c.Strategy = strategy
 	}
 }
-func UseStrategyDate() UploadOption {
-	return func(c *UploadConf) {
-		c.Strategy = UploadStrategyDate
+func UseStrategyDate() StorageOption {
+	return func(c *StorageConf) {
+		c.Strategy = StorageStrategyDate
 	}
 }
-func UseStrategyUUID() UploadOption {
-	return func(c *UploadConf) {
-		c.Strategy = UploadStrategyUUID
+func UseStrategyUUID() StorageOption {
+	return func(c *StorageConf) {
+		c.Strategy = StorageStrategyUUID
 	}
 }
 
-type UploadOption func(*UploadConf)
+type StorageOption func(*StorageConf)
 
 // 上传文件
-func Upload(file multipart.File, header *multipart.FileHeader, opts ...UploadOption) (dstpath, filekey, filename, ext string, size int64, err error) {
+func Realpath(filekey string, opts ...StorageOption) (realpath string) {
+	conf := defaultconfig("")
+	for _, opt := range opts {
+		opt(conf)
+	}
+	localdir := conf.LocalDir
+	mappath := conf.MapperPath
+	realpath = strings.ReplaceAll(filekey, mappath, localdir)
+	return
+}
+
+// 上传文件
+func ServeFile(filekey string, opts ...StorageOption) http.Handler {
+	realpath := Realpath(filekey, opts...)
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		http.ServeFile(rw, req, realpath)
+	})
+}
+
+// 上传文件
+func Upload(file multipart.File, header *multipart.FileHeader, opts ...StorageOption) (dstpath, filekey, filename, ext string, size int64, err error) {
 	filename = header.Filename
 	ext = path.Ext(header.Filename)
 	c := defaultconfig(ext)
@@ -112,7 +133,7 @@ func Upload(file multipart.File, header *multipart.FileHeader, opts ...UploadOpt
 }
 
 // 上传文件
-func UploadBase64(b64data string, ext string, opts ...UploadOption) (dstpath, filekey string, size int64, err error) {
+func StorageBase64(b64data string, ext string, opts ...StorageOption) (dstpath, filekey string, size int64, err error) {
 	//文件转base64
 	decodeBytes, err := base64.StdEncoding.DecodeString(b64data)
 	if err != nil {
