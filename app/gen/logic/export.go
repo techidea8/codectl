@@ -10,13 +10,13 @@ import (
 
 	"github.com/techidea8/codectl/app/gen/conf"
 	"github.com/techidea8/codectl/app/gen/model"
-	"github.com/techidea8/codectl/infra/cond"
-	"github.com/techidea8/codectl/infra/dbkit"
-	"github.com/techidea8/codectl/infra/filekit"
-	"github.com/techidea8/codectl/infra/logger"
-	"github.com/techidea8/codectl/infra/slicekit"
-	"github.com/techidea8/codectl/infra/stringx"
-	"github.com/techidea8/codectl/infra/timekit"
+	"github.com/turingdance/infra/cond"
+	"github.com/turingdance/infra/dbkit"
+	"github.com/turingdance/infra/filekit"
+	"github.com/turingdance/infra/logger"
+	"github.com/turingdance/infra/slicekit"
+	"github.com/turingdance/infra/stringx"
+	"github.com/turingdance/infra/timekit"
 	"gorm.io/gorm"
 )
 

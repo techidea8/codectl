@@ -11,7 +11,7 @@ import (
 	"github.com/techidea8/codectl/app/gen/conf"
 	"github.com/techidea8/codectl/app/gen/logic"
 	"github.com/techidea8/codectl/app/gen/model"
-	"github.com/techidea8/codectl/infra/cond"
+	"github.com/turingdance/infra/cond"
 )
 
 type prjctrl struct {

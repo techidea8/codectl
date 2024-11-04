@@ -15,8 +15,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/techidea8/codectl/infra/slicekit"
-	"github.com/techidea8/codectl/infra/stringx"
+	"github.com/turingdance/infra/slicekit"
+	"github.com/turingdance/infra/stringx"
 )
 
 var dirsrc string = ""
@@ -178,7 +178,7 @@ var tplrouter string = `
 package ${package}
 
 import (
-	"github.com/techidea8/codectl/infra/restkit"
+	"github.com/turingdance/infra/restkit"
 )
 
 var DefaultRouter *restkit.Router = restkit.NewRouter().PathPrefix("/")

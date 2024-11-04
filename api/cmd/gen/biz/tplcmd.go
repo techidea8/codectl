@@ -16,9 +16,9 @@ import (
 	"github.com/techidea8/codectl/app/gen/conf"
 	"github.com/techidea8/codectl/app/gen/logic"
 	"github.com/techidea8/codectl/app/gen/model"
-	"github.com/techidea8/codectl/infra/filekit"
-	"github.com/techidea8/codectl/infra/logger"
-	"github.com/techidea8/codectl/infra/oskit"
+	"github.com/turingdance/infra/filekit"
+	"github.com/turingdance/infra/logger"
+	"github.com/turingdance/infra/oskit"
 )
 
 type tplctrl struct {

@@ -3,9 +3,9 @@ package handler
 import (
 	"github.com/techidea8/codectl/app/gen/logic"
 	"github.com/techidea8/codectl/app/gen/model"
-	"github.com/techidea8/codectl/infra/cond"
-	"github.com/techidea8/codectl/infra/restkit"
-	"github.com/techidea8/codectl/infra/wraper"
+	"github.com/turingdance/infra/cond"
+	"github.com/turingdance/infra/restkit"
+	"github.com/turingdance/infra/wraper"
 )
 
 type Project struct{}

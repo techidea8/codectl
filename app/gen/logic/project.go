@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/techidea8/codectl/app/gen/model"
-	"github.com/techidea8/codectl/infra/cond"
-	"github.com/techidea8/codectl/infra/dbkit"
+	"github.com/turingdance/infra/cond"
+	"github.com/turingdance/infra/dbkit"
 )
 
 // 列表全部项目

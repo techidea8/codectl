@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/techidea8/codectl/app/gen/conf"
-	"github.com/techidea8/codectl/infra/logger"
+	"github.com/turingdance/infra/logger"
 )
 
 //go:embed tpl-vue3-go-v2/*

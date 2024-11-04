@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/techidea8/codectl/app/gen/conf"
 	"github.com/techidea8/codectl/app/gen/logic"
-	"github.com/techidea8/codectl/infra/logger"
+	"github.com/turingdance/infra/logger"
 )
 
 // 这个是根命令定义

@@ -2,7 +2,7 @@ package logic
 
 import (
 	"github.com/techidea8/codectl/app/gen/model"
-	"github.com/techidea8/codectl/infra/slicekit"
+	"github.com/turingdance/infra/slicekit"
 )
 
 func BuildMethod(methodArr []string) []model.Method {

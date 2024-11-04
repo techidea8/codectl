@@ -8,12 +8,12 @@ import (
 	"github.com/techidea8/codectl/app/gen/conf"
 	"github.com/techidea8/codectl/app/gen/logic"
 	"github.com/techidea8/codectl/app/gen/model"
-	"github.com/techidea8/codectl/infra/cond"
-	"github.com/techidea8/codectl/infra/dbkit"
-	"github.com/techidea8/codectl/infra/filekit"
-	"github.com/techidea8/codectl/infra/logger"
-	"github.com/techidea8/codectl/infra/restkit"
-	"github.com/techidea8/codectl/infra/wraper"
+	"github.com/turingdance/infra/cond"
+	"github.com/turingdance/infra/dbkit"
+	"github.com/turingdance/infra/filekit"
+	"github.com/turingdance/infra/logger"
+	"github.com/turingdance/infra/restkit"
+	"github.com/turingdance/infra/wraper"
 	"gorm.io/gorm"
 )
 

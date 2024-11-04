@@ -6,8 +6,8 @@ import (
 
 	"github.com/techidea8/codectl/app/gen/conf"
 	"github.com/techidea8/codectl/app/gen/model"
-	"github.com/techidea8/codectl/infra/dbkit"
-	"github.com/techidea8/codectl/infra/logger"
+	"github.com/turingdance/infra/dbkit"
+	"github.com/turingdance/infra/logger"
 )
 
 func InitApp(c *conf.AppConf) {

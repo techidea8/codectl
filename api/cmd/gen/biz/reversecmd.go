@@ -9,9 +9,9 @@ import (
 	"github.com/techidea8/codectl/app/gen/conf"
 	"github.com/techidea8/codectl/app/gen/logic"
 	"github.com/techidea8/codectl/app/gen/model"
-	"github.com/techidea8/codectl/infra/dbkit"
-	"github.com/techidea8/codectl/infra/logger"
-	"github.com/techidea8/codectl/infra/stringx"
+	"github.com/turingdance/infra/dbkit"
+	"github.com/turingdance/infra/logger"
+	"github.com/turingdance/infra/stringx"
 )
 
 type reversectrl struct {
